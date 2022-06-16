@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:07:45 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 16:35:50 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,13 @@ int		tokenizer(t_shell *shell, t_parg *parg, char *key);
 size_t	ft_skipcharlen(const char *str, char c);
 int		is_end(char *line, int i);
 int		is_start(char *line, int i);
-int		error_trigger(t_parg *parg, char *file, int errline, int ret);
+int		set_trigger(t_parg *parg, char *file, int errline, int ret);
 void	set_quote(char *quote, char *line);
 /*
 ** print.c
 */
 void	print_list(t_shell *shell);
-int		perror_parsing(t_parg *parg, int i);
+int		print_parserror(t_parg *parg, int i);
 /*
 ** free.c
 */

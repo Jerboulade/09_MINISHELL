@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:29:11 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:14:38 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 16:31:43 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	is_start(char *line, int i)
 	return (1);
 }
 
-int	error_trigger(t_parg *parg, char *file, int errline, int ret)
+int	set_trigger(t_parg *parg, char *file, int errline, int ret)
 {
 	// ft_printf("\nIN ERROR TRIGGER\n");
 	// ft_printf("PARG: ret[%d] pos[%d]\n", parg->ret, parg->pos);

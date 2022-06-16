@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:14:07 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 16:35:46 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	print_list(t_shell *shell)
 	ft_printf("%s#######################################%s\n", ORANGE, RESET);
 }
 
-int	perror_parsing(t_parg *parg, int i)
+int	print_parserror(t_parg *parg, int i)
 {
 	int	j;
 

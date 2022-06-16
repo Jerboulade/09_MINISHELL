@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:11:39 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 16:35:57 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,28 +68,28 @@ int	get_token(t_shell *shell, t_parg *parg, int *i, int j)
 
 int	stop_parsing(t_shell *shell, t_parg *parg, int i)
 {
-	t_token	*prev;
-	char	*line;
 	int		pos;
+	char	*line;
+	t_token	*prev;
 
-	line = parg->line;
-	pos = parg->pos;
 	// ft_printf("\nIN STOP PARSING\n");
 	// ft_printf("char in stop_parsing = [%c]\n", line[i]);
+	pos = parg->pos;
+	line = parg->line;
 	if (!is_start(line, i))
 		prev = (t_token *)shell->current->data;
 	if (!line[i] && is_start(line, i))
-		return (error_trigger(parg, __FILE__, __LINE__, 0));
+		return (set_trigger(parg, __FILE__, __LINE__, 0));
 	else if (!line[i] && pos == -1 && prev->key[0] != '|')
-		return (error_trigger(parg, __FILE__, __LINE__, 1));
+		return (set_trigger(parg, __FILE__, __LINE__, 1));
 	else if (!line[i])
-		return (error_trigger(parg, __FILE__, __LINE__, 0));
+		return (set_trigger(parg, __FILE__, __LINE__, 0));
 	else if (is_start(line, i) && ft_strchr("|><", line[i]) && is_end(line, i))
-		return (error_trigger(parg, __FILE__, __LINE__, 2));
+		return (set_trigger(parg, __FILE__, __LINE__, 2));
 	else if (is_start(line, i) && line[i] == '|')
-		return (error_trigger(parg, __FILE__, __LINE__, 3));
+		return (set_trigger(parg, __FILE__, __LINE__, 3));
 	else if (ft_strchr("|><", line[i]) && pos == -1 && !is_start(line, i))
-		return (error_trigger(parg, __FILE__, __LINE__, 4));
+		return (set_trigger(parg, __FILE__, __LINE__, 4));
 	return (0);
 }
 
@@ -103,7 +103,7 @@ int	parsing(t_shell *shell, t_parg *parg, int i)
 	quote = 0;
 	i += ft_skipcharlen(parg->line + i, ' ');
 	if (stop_parsing(shell, parg, i))
-		return (perror_parsing(parg, i));
+		return (print_parserror(parg, i));
 	j = i;
 	// ft_printf("starting char2 = [%c]\n", parg->line[i]);
 	while (parg->line[i])
@@ -117,6 +117,6 @@ int	parsing(t_shell *shell, t_parg *parg, int i)
 	}
 	// ft_printf("char before tokenizer ' ' = [%c]\n", parg->line[i])
 	if (get_token(shell, parg, &i, j))
-		return (perror_parsing(parg, i));
+		return (print_parserror(parg, i));
 	return (parsing(shell, parg, i));
 }
