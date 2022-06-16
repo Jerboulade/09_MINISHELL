@@ -2,6 +2,7 @@ echo "hello" wor'ld' | grep ho'w "are "y ou"
 hello |hello| hel"lo" hell'o ' hello' ' 'hello'>>'hello ' "hel'"lo '"          he'llo" (-->all token should contain hello -->work differently in bash since quote is open)
 echo hello hello hel"lo" hell'o ' hello' ' 'hello' 'hello ' "hel'"lo                                        '"     hello"' (same --> work in bash)
 echo hello> hello>>hel"lo"|hell'o ' <hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello" (parsing should retrieve all token)
+> file echo hello> hello>>hel"lo"|hell'o ' <hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello"| (parsing should retrieve all token)
 
 echo hello> hello>>hel"lo"|hell'o ' <>hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello" (parsing should detect error near '<')
 echo hello> hello>>hel"lo"||hell'o ' <>hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello" (parsing should detect error near '|')

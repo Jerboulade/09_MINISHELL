@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 17:34:03 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 17:43:21 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int			parsing(t_shell *shell, t_parg *parg, int i);
 /*
 ** tokenizer.c
 */
-t_symbol	get_token_symbol(char *key)
+t_symbol	get_token_symbol(char *key);
 int			tokenizer(t_shell *shell, t_parg *parg, char *key);
 /*
 ** parsing_utils.c
