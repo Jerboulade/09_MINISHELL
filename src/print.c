@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:35:46 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 17:25:03 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ void	print_list(t_shell *shell)
 	ft_printf("%s\n#######################################\n", ORANGE);
 	ft_printf("               TOKEN LIST              \n");
 	ft_printf("#######################################\n");
-	ft_printf(" <POS, %19s, %10s>%s\n", "KEY", "T_SYMBOL", RESET);
+	ft_printf(" <POS, %19s, %-10s>%s\n", "KEY", "T_SYMBOL", RESET);
 	while (tmp)
 	{
 		token = (t_token *)tmp->data;
-		ft_printf(" <%03d, %19s,", token->pos, token->key);
+		ft_printf(" %s<%s%03d, %19s,", ORANGE, RESET, token->pos, token->key);
 		if (token->symbol == T_COMMAND)
 			symbol = "T_COMMAND";
 		else if (token->symbol == T_BUILTIN)
@@ -37,9 +37,9 @@ void	print_list(t_shell *shell)
 			symbol = "T_PIPE";
 		else if (token->symbol == T_REDIRECT)
 			symbol = "T_REDIRECT";
-		else if (token->symbol == T_TEST)
-			symbol = "T_TEST";
-		ft_printf(" %10s>\n", symbol);
+		else if (token->symbol == T_NO_SYM)
+			symbol = "T_NO_SYM";
+		ft_printf(" %-10s%s>%s\n", symbol, ORANGE, RESET);
 		tmp = tmp->next;
 	}
 	ft_printf("%s#######################################%s\n", ORANGE, RESET);

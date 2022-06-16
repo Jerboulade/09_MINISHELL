@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:35:50 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 17:34:03 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ typedef enum e_symbol
 	T_ARG,
 	T_PIPE,
 	T_REDIRECT,
-	T_TEST
+	T_NO_SYM
 }			t_symbol;
 
 typedef struct s_parg
@@ -74,32 +74,33 @@ void	minishell(void);
 /*
 ** parsing.c
 */
-char	*red_key(t_parg *parg, int *i);
-char	*arg_key(t_parg *parg, int start, int end);
-int		get_token(t_shell *shell, t_parg *parg, int *i, int j);
-int		stop_parsing(t_shell *shell, t_parg *parg, int i);
-int		parsing(t_shell *shell, t_parg *parg, int i);
+char		*red_key(t_parg *parg, int *i);
+char		*arg_key(t_parg *parg, int start, int end);
+int			get_token(t_shell *shell, t_parg *parg, int *i, int j);
+int			stop_parsing(t_shell *shell, t_parg *parg, int i);
+int			parsing(t_shell *shell, t_parg *parg, int i);
 /*
 ** tokenizer.c
 */
-int		tokenizer(t_shell *shell, t_parg *parg, char *key);
+t_symbol	get_token_symbol(char *key)
+int			tokenizer(t_shell *shell, t_parg *parg, char *key);
 /*
 ** parsing_utils.c
 */
-size_t	ft_skipcharlen(const char *str, char c);
-int		is_end(char *line, int i);
-int		is_start(char *line, int i);
-int		set_trigger(t_parg *parg, char *file, int errline, int ret);
-void	set_quote(char *quote, char *line);
+size_t		ft_skipcharlen(const char *str, char c);
+int			is_end(char *line, int i);
+int			is_start(char *line, int i);
+int			set_trigger(t_parg *parg, char *file, int errline, int ret);
+void		set_quote(char *quote, char *line);
 /*
 ** print.c
 */
-void	print_list(t_shell *shell);
-int		print_parserror(t_parg *parg, int i);
+void		print_list(t_shell *shell);
+int			print_parserror(t_parg *parg, int i);
 /*
 ** free.c
 */
-void	free_parg(t_parg *parg);
-void	free_token(void *token);
-void	free_shell(t_shell *shell);
+void		free_parg(t_parg *parg);
+void		free_token(void *token);
+void		free_shell(t_shell *shell);
 #endif
