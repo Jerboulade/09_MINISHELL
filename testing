@@ -1,0 +1,62 @@
+echo "hello" wor'ld' | grep ho'w "are "y ou"
+hello |hello| hel"lo" hell'o ' hello' ' 'hello'>>'hello ' "hel'"lo '"          he'llo" (-->all token should contain hello -->work differently in bash since quote is open)
+echo hello hello hel"lo" hell'o ' hello' ' 'hello' 'hello ' "hel'"lo                                        '"     hello"' (same --> work in bash)
+echo hello> hello>>hel"lo"|hell'o ' <hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello" (parsing should retrieve all token)
+
+echo hello> hello>>hel"lo"|hell'o ' <>hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello" (parsing should detect error near '<')
+echo hello> hello>>hel"lo"||hell'o ' <>hello' ' 'hello' 'hel<<<|>>>lo ' "hel'"lo '"     hello" (parsing should detect error near '|')
+
+TO CHECK
+bash-3.2$ | ls
+bash: syntax error near unexpected token `|'
+
+bash-3.2$ cat hello >
+bash: syntax error near unexpected token `newline'
+
+bash-3.2$ cat hello >>
+bash: syntax error near unexpected token `newline'
+
+bash-3.2$ cat hello<
+bash: syntax error near unexpected token `newline'
+
+bash-3.2$ cat hello<<
+bash: syntax error near unexpected token `newline'
+
+bash-3.2$ cat hello<>
+bash: syntax error near unexpected token `newline'
+
+bash-3.2$ cat hello|
+> 
+bash-3.2$ ls . >
+bash: syntax error near unexpected token `newline'
+
+bash-3.2$ > cat hello
+bash: hello: command not found
+
+bash-3.2$ < cat hello
+bash: hello: command not found
+
+bash-3.2$ < cat
+bash-3.2$ | cat
+bash: syntax error near unexpected token `|'
+
+bash-3.2$ | echo coucou
+bash: syntax error near unexpected token `|'
+
+bash-3.2$ | echo grep coucou
+bash: syntax error near unexpected token `|'
+
+bash-3.2$ > echo coucou
+bash: coucou: command not found
+
+bash-3.2$ < echo coucou
+bash: coucou: command not found
+
+bash-3.2$ < echo
+bash-3.2$ < echo echo
+bash-3.2$ < echo grep
+usage: grep [-abcDEFGHhIiJLlmnOoqRSsUVvwxZ] [-A num] [-B num] [-C[num]]
+	[-e pattern] [-f file] [--binary-files=value] [--color=when]
+	[--context[=num]] [--directories=action] [--label] [--line-buffered]
+	[--null] [pattern] [file ...]
+bash-3.2$ < echo grep coucou
