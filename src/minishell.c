@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:18:43 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/17 03:34:35 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,66 @@ void	display_prompt(void)
 	// free(pwd);
 }
 
+int		rebuilt_path_string(char **env)
+{
+	int			i;
+	char		*tmp;
+
+	i = 0;
+	while (env[i])
+		i++;
+	while (--i >= 0)
+	{
+		if (env[i][0] != '/')
+		{
+			tmp = ft_strjoin("/", env[i]);
+			if (!tmp)
+				return (0);
+			free(env[i]);
+			env[i] = tmp;
+		}
+		if (env[i][ft_strlen(env[i]) - 1] != '/')
+		{
+			tmp = ft_strjoin(env[i], "/");
+			if (!tmp)
+				return (0);
+			free(env[i]);
+			env[i] = tmp;
+		}
+	}
+	return (1);
+}
+
+char	**init_env_path()
+{
+	char	*tmp;
+	char	**env;
+
+	tmp = ft_strdup(getenv("PATH"));
+	if (!tmp)
+		return (NULL);
+	env = ft_split(tmp, ':');
+	if (!env)
+	{
+		free(tmp);
+		return (NULL);
+	}
+	free(tmp);
+	if (!rebuilt_path_string(env))
+	{
+		free_env_path(env);
+		return (NULL);
+	}
+
+	ft_printf("%s############# ENV_PATH ################\n", MAG);
+	int i = -1;
+	while (env[++i])
+		printf("[%02d] %s\n", i + 1, env[i]);
+	ft_printf("\n");
+
+	return (env);
+}
+
 t_shell	*init_shell(void)
 {
 	t_shell	*shell;
@@ -46,6 +106,9 @@ t_shell	*init_shell(void)
 	if (!shell->start)
 		return (NULL);
 	shell->current = NULL;
+	shell->env_path = init_env_path();
+	if (!shell->env_path)
+		return (NULL);
 	return (shell);
 }
 

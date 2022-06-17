@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 16:15:30 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/16 20:53:20 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,18 @@ void	free_parg(t_parg *parg)
 	if (parg->line)
 		free(parg->line);
 	free(parg);
+}
+
+void	free_env_path(char **env)
+{
+	int	i;
+
+	if (!env)
+		return ;
+	i = -1;
+	while (env[++i])
+		free(env[i]);
+	free(env);
 }
 
 void	free_token(void *token)
@@ -39,4 +51,5 @@ void	free_shell(t_shell *shell)
 		return ;
 	if (*shell->start)
 		ft_lstclear(shell->start, &free_token);
+	free_env_path(shell->env_path);
 }

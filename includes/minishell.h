@@ -6,21 +6,23 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 17:43:21 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/17 03:02:03 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include "../libft/lib_includes/libft.h"
-# include <sys/param.h>
 # include <stdio.h>
+# include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <sys/param.h>
+# include <sys/stat.h>
 
-# define CYAN "\033[1;36m"
-# define GREEN "\033[1;32m"
-# define MAG "\033[1;35m"
+# define CYAN "\033[0;36m"
+# define GREEN "\033[0;32m"
+# define MAG "\033[0;35m"
 # define RED "\033[0;31m"
 # define ORANGE "\033[0;33m"
 # define RESET "\033[0m"
@@ -35,6 +37,7 @@
 */
 typedef enum e_symbol
 {
+	T_UNDEF,
 	T_COMMAND,
 	T_BUILTIN,
 	T_ARG,
@@ -64,11 +67,14 @@ typedef struct s_shell
 {
 	t_list		**start;
 	t_list		*current;
+	char		**env_path;
 }				t_shell;
 /*
 ** minishell.c
 */
 void	display_prompt(void);
+int		rebuilt_path_string(char **env);
+char	**init_env_path(void);
 t_shell	*init_shell(void);
 void	minishell(void);
 /*
@@ -82,7 +88,8 @@ int			parsing(t_shell *shell, t_parg *parg, int i);
 /*
 ** tokenizer.c
 */
-t_symbol	get_token_symbol(char *key);
+int			is_valid_command(t_shell *shell, t_token *token, char *key);
+t_symbol 	get_token_symbol(t_shell *shell, t_token *token, char *key);
 int			tokenizer(t_shell *shell, t_parg *parg, char *key);
 /*
 ** parsing_utils.c
@@ -100,6 +107,7 @@ int			print_parserror(t_parg *parg, int i);
 /*
 ** free.c
 */
+void		free_env_path(char **env);
 void		free_parg(t_parg *parg);
 void		free_token(void *token);
 void		free_shell(t_shell *shell);
