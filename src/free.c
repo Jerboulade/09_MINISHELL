@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/20 02:15:25 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/20 02:53:28 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	clear_parsing(t_shell *shell)
 	shell->line = NULL;
 	if (shell->start && shell->start->next)
 		ft_lstclear(&shell->start->next, &free_token);
-	ft_printf("\nIN CLEAR PARSING start->next = %p\n", shell->start->next);
+	// ft_printf("\nIN CLEAR PARSING start->next = %p\n", shell->start->next);
 }
 
 void	free_env_path(char **env)

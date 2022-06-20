@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/20 01:31:37 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/20 02:51:33 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	stop_parsing(t_shell *shell, int pos, int i)
 	char	*line;
 	t_token	*prev;
 
-	ft_printf("\nIN STOP PARSING\n");
+	// ft_printf("\nIN STOP PARSING\n");
 	// ft_printf("char in stop_parsing = [%c]\n", line[i]);
 	line = shell->line;
 	if (!is_start(line, i))
@@ -115,7 +115,7 @@ int	parsing(t_shell *shell, int pos, int i)
 			set_quote(&quote, shell->line + i);
 		i++;
 	}
-	// ft_printf("char before tokenizer ' ' = [%c]\n", shell->line[i])
+	// ft_printf("char before tokenizer = [%c]\n", shell->line[i])
 	if (get_token(shell, &pos, &i, j))
 		return (shell->ret);
 	return (parsing(shell, pos, i));
