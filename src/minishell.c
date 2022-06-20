@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/17 03:34:35 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/20 02:20:43 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,46 +98,62 @@ char	**init_env_path()
 t_shell	*init_shell(void)
 {
 	t_shell	*shell;
+	t_token	*token;
 
-	shell = (t_shell *)ft_calloc(1, sizeof(t_shell));
+	shell = ft_calloc(1, sizeof(*shell));
 	if (!shell)
 		return (NULL);
-	shell->start = (t_list **)ft_calloc(1, sizeof(t_list *));
+	token = ft_calloc(1, sizeof(*token));
+	if (!token)
+		return (NULL);
+	token->symbol = T_START;
+	token->pos = -2;
+	shell->start = ft_lstnew(token);
 	if (!shell->start)
 		return (NULL);
-	shell->current = NULL;
+	// shell->current = NULL;
+	shell->line = NULL;
+	// shell->ret = 0;
 	shell->env_path = init_env_path();
 	if (!shell->env_path)
 		return (NULL);
+
 	return (shell);
 }
 
-void	minishell(void)
-{
-	t_shell	*shell;
-	t_parg	*parg;
+// t_parg	*init_parg(void)
+// {
+// 	t_parg	*parg;
+//
+// 	parg = ft_calloc(1, sizeof(*parg));
+// 	if (!parg)
+// 		return (NULL);
+// 	parg->pos = -1;
+// 	return (parg);
+// }
 
-	shell = init_shell();
-	if (!shell)
-		return ;
-	parg = (t_parg *)ft_calloc(1, sizeof(t_parg));
-	if (!parg)
-		return ;
+int	minishell(t_shell *shell)
+{
+	// shell->parg = init_parg();
+	// if (!shell->parg)
+	// 	return (exit_free(shell));
+	shell->ret = -1;
+	shell->current = shell->start;
 	display_prompt();
-	parg->line = readline("> ");
-	if (parg->line)
+	shell->line = readline("% ");
+	if (shell->line)
 	{
 		// ft_printf("%s#######################################\n", ORANGE);
 		// ft_printf("                 PARSING                 \n");
 		// ft_printf("#######################################%s\n", RESET);
-		parg->pos = -1;
-		parsing(shell, parg, 0);
-		print_list(shell);
-		ft_printf("\n%s########## MINISHELL ret = %d ##########%s\n", CYAN, parg->ret, RESET);
-		free_parg(parg);
-		// TO DO HERE : execute cmd line
-		ft_printf("%s############# FREE SHELL ##############%s\n\n", CYAN, RESET);
-		free_shell(shell);
-		minishell();
+		parsing(shell, -1, 0);
+		print_list(shell); // exec_line();
+		if (shell->ret != 0)
+			print_parserror(shell);
+		clear_parsing(shell);
+		// free_parg(shell->parg);
 	}
+	// ft_lstclear(shell->starts, &free_token);
+	ft_printf("%s########## MINISHELL ret = %d ##########%s\n\n", CYAN, shell->ret, RESET);
+	return (shell->ret);
 }

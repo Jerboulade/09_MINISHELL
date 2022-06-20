@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 18:51:20 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/20 01:21:40 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	print_list(t_shell *shell)
 	t_token		*token;
 	const char	*symbol;
 
-	tmp = *shell->start;
+	tmp = shell->start;
 	ft_printf("%s\n#######################################\n", ORANGE);
 	ft_printf("               TOKEN LIST              \n");
 	ft_printf("#######################################\n");
@@ -38,37 +38,33 @@ void	print_list(t_shell *shell)
 			symbol = "T_PIPE";
 		else if (token->symbol == T_REDIRECT)
 			symbol = "T_REDIRECT";
-		else if (token->symbol == T_NO_SYM)
-			symbol = "T_NO_SYM";
+		else if (token->symbol == T_INVALID)
+			symbol = "T_INVALID";
+		else if (token->symbol == T_START)
+			symbol = "T_START";
 		ft_printf("%-11s%s>%s\n", symbol, ORANGE, RESET);
 		tmp = tmp->next;
 	}
 	ft_printf("%s#######################################%s\n", ORANGE, RESET);
 }
 
-int	print_parserror(t_parg *parg, int i)
+int	print_parserror(t_shell *shell)
 {
+	int	i;
 	int	j;
 
 	// ft_printf("\nIN PERROR PARSING\n");
 	// ft_printf("PARG: ret[%d] pos[%d]\n", parg->ret, parg->pos);
+	i = shell->err_index;
 	j = -1;
-	if (!parg->ret)
-		return (0);
-	ft_printf("%sminishell:error[%d]:", RED, parg->ret);
-	ft_printf("%s:line%d: ", parg->error_file, parg->error_line);
-	if (parg->ret > 0)
+	ft_printf("%sminishell(%d):", RED, shell->ret);
+	ft_printf("%ssyntax error\n", RESET);
+	ft_printf("%s%s\n", shell->line, GREEN);
+	while (++j < i)
 	{
-		ft_printf("%ssyntax error\n", RESET);
-		ft_printf("%s%s\n", parg->line, GREEN);
-		while (++j < i)
-		{
-			if (parg->line[j] >= 0 || (j % 2))
-				ft_printf("~");
-		}
-		ft_printf("%s^%s\n", RED, RESET);
+		if (shell->line[j] >= 0 || (j % 2))
+			ft_printf("~");
 	}
-	else
-		ft_printf("%smalloc error\n", RESET);
-	return (parg->ret);
+	ft_printf("%s^%s\n", RED, RESET);
+	return (shell->ret);
 }

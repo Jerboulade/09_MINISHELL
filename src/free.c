@@ -6,19 +6,30 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/16 20:53:20 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/20 02:15:25 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_parg(t_parg *parg)
+int	exit_free(t_shell *shell)
 {
-	if (!parg)
+	write(STDERR_FILENO, "exit : malloc error\n", 20);
+	if (shell)
+		free_shell(shell);
+	exit(EXIT_FAILURE);
+}
+
+void	clear_parsing(t_shell *shell)
+{
+	if (!shell)
 		return ;
-	if (parg->line)
-		free(parg->line);
-	free(parg);
+	if (shell->line)
+		free(shell->line);
+	shell->line = NULL;
+	if (shell->start && shell->start->next)
+		ft_lstclear(&shell->start->next, &free_token);
+	ft_printf("\nIN CLEAR PARSING start->next = %p\n", shell->start->next);
 }
 
 void	free_env_path(char **env)
@@ -40,6 +51,7 @@ void	free_token(void *token)
 	if (!token)
 		return ;
 	tmp = (t_token *)token;
+	ft_printf("%s############# FREE TOKEN ############## %s%s\n", CYAN, tmp->key, RESET);
 	if (tmp->key)
 		free(tmp->key);
 	free(tmp);
@@ -49,7 +61,14 @@ void	free_shell(t_shell *shell)
 {
 	if (!shell)
 		return ;
-	if (*shell->start)
-		ft_lstclear(shell->start, &free_token);
+	if (shell->start)
+		ft_lstclear(&shell->start, &free_token);
+	// ft_printf("free %s\n", shell->line);
+	if (shell->line)
+		free(shell->line);
+	shell->line = NULL;
+	// ft_printf("free %p\n", shell->start);
+	// free(shell->start);
 	free_env_path(shell->env_path);
+	free(shell);
 }
