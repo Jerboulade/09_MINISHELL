@@ -6,12 +6,12 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/19 22:25:06 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/23 02:13:38 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-void tail()
+void preprocess()
 {
 	t_shell	*shell;
 
@@ -29,7 +29,7 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	(void)env;
-	tail();
+	preprocess();
 	// ########## TEST : MULTI PROCESS ##########
 	// pid_t pid;
 	// const char *whoami = "parent";
@@ -57,7 +57,7 @@ int	main(int ac, char **av, char **env)
 	// }
 
 	// ########## CHECK LEAKS ##########
-	system("leaks minishell");
+	// system("leaks minishell");
 	// while (1);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/20 01:21:40 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/23 02:27:13 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ void	print_list(t_shell *shell)
 	const char	*symbol;
 
 	tmp = shell->start;
-	ft_printf("%s\n#######################################\n", ORANGE);
+	ft_printf("%s#######################################\n", ORANGE);
 	ft_printf("               TOKEN LIST              \n");
 	ft_printf("#######################################\n");
-	ft_printf("<POS|%-20.20s*|%-11s>%s\n", "KEY", "T_SYMBOL", RESET);
+	ft_printf("<POS|%-20.20s*|%-11s> i%s\n", "KEY", "T_SYMBOL", RESET);
 	while (tmp)
 	{
 		token = (t_token *)tmp->data;
@@ -42,7 +42,11 @@ void	print_list(t_shell *shell)
 			symbol = "T_INVALID";
 		else if (token->symbol == T_START)
 			symbol = "T_START";
-		ft_printf("%-11s%s>%s\n", symbol, ORANGE, RESET);
+		else if (token->symbol == T_WORD)
+			symbol = "T_WORD";
+		else if (token->symbol == T_EMPTY)
+			symbol = "T_EMPTY";
+		ft_printf("%-11s%s> %s%d\n", symbol, ORANGE, RESET, token->index);
 		tmp = tmp->next;
 	}
 	ft_printf("%s#######################################%s\n", ORANGE, RESET);
@@ -55,10 +59,13 @@ int	print_parserror(t_shell *shell)
 
 	// ft_printf("\nIN PERROR PARSING\n");
 	// ft_printf("PARG: ret[%d] pos[%d]\n", parg->ret, parg->pos);
-	i = shell->err_index;
+	i = pop_index(shell->current);
 	j = -1;
-	ft_printf("%sminishell(%d):", RED, shell->ret);
-	ft_printf("%ssyntax error\n", RESET);
+	if (shell->ret > 0)
+	{
+		ft_printf("%sminishell(%d):", RED, shell->ret);
+		ft_printf("%ssyntax error\n", RESET);
+	}
 	ft_printf("%s%s\n", shell->line, GREEN);
 	while (++j < i)
 	{

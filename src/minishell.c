@@ -6,33 +6,39 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/20 02:20:43 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/23 02:52:29 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	display_prompt(void)
+char	*display_prompt(int i, int j, char *tmp, char *miniprompt)
 {
-	const char	*usr;
-	const char	*host;
-	const char	*pwd;
+	static char	prompt[PROMPT_SIZE + 33];
 
-	usr = getenv("USER");
-	host = getenv("HOSTNAME");
-	// host = "190.1.1.1";
-	// pwd = getenv("PWD") + ft_strlen(getenv("HOME"));
-	pwd = ft_strrchr(getenv("PWD"), '/') + 1;
-	// pwd = NULL;
-	// pwd = getcwd((char *)pwd, MAXPATHLEN);
-	if (usr)
-		ft_printf("%s%s%s", MAG, usr, RESET);
-	if (host)
-		ft_printf("@%s%s%s", GREEN, host, RESET);
-	if (pwd)
-		ft_printf(":%s%s%s", CYAN, pwd, RESET);
-	// ft_printf("\n");
-	// free(pwd);
+	tmp = getenv("USER");
+	j += ft_strlcpy(prompt + j, MAG, 8);
+	while (tmp && tmp[i] && j < PROMPT_SIZE + 7)
+		prompt[j++] = tmp[i++];
+	i = 0;
+	tmp = getenv("HOSTNAME");
+	j += ft_strlcpy(prompt + j, GREEN, 8);
+	if (tmp)
+		prompt[j++] = '@';
+	while (tmp && tmp[i] && j < PROMPT_SIZE + 15)
+		prompt[j++] = tmp[i++];
+	i = 0;
+	tmp = ft_strrchr(getenv("PWD"), '/') + 1;
+	j += ft_strlcpy(prompt + j, CYAN, 8);
+	if (tmp)
+		prompt[j++] = ':';
+	while (tmp && tmp[i] && j < PROMPT_SIZE + 23)
+		prompt[j++] = tmp[i++];
+	j += ft_strlcpy(prompt + j, RESET, 8);
+	ft_strlcpy(prompt + j, "> ", 3);
+	if (miniprompt)
+		ft_strlcpy(prompt, miniprompt, ft_strlen(miniprompt) + 1);
+	return (prompt);
 }
 
 int		rebuilt_path_string(char **env)
@@ -90,8 +96,7 @@ char	**init_env_path()
 	int i = -1;
 	while (env[++i])
 		printf("[%02d] %s\n", i + 1, env[i]);
-	ft_printf("\n");
-
+	ft_printf("%s\n", RESET);
 	return (env);
 }
 
@@ -108,6 +113,7 @@ t_shell	*init_shell(void)
 		return (NULL);
 	token->symbol = T_START;
 	token->pos = -2;
+	token->index = 0;
 	shell->start = ft_lstnew(token);
 	if (!shell->start)
 		return (NULL);
@@ -121,39 +127,63 @@ t_shell	*init_shell(void)
 	return (shell);
 }
 
-// t_parg	*init_parg(void)
-// {
-// 	t_parg	*parg;
-//
-// 	parg = ft_calloc(1, sizeof(*parg));
-// 	if (!parg)
-// 		return (NULL);
-// 	parg->pos = -1;
-// 	return (parg);
-// }
+void join_newline(t_shell *shell, char *newline)
+{
+	char *tmp;
+
+	tmp = ft_strjoin(shell->line, newline);
+	if (!tmp)
+		exit_free(shell);
+	free(newline);
+	free(shell->line);
+	shell->line = tmp;
+}
+
+t_symbol parser(t_shell *shell)
+{
+	char *newline;
+
+	if (!shell->line)
+		shell->line = readline(display_prompt(0, 0, NULL, NULL));
+	else
+	{
+		newline = readline(display_prompt(0, 0, NULL, "pipe> "));
+		if (!newline)
+			return (-1);
+		else if (is_empty(newline))
+		{
+			free(newline);
+			return (T_PIPE);
+		}
+		join_newline(shell, newline);
+	}
+	if (!shell->line)
+		shell->ret = -1;
+	else if (is_empty(shell->line))
+		shell->ret = 0;
+	else
+		shell->ret = parsing(shell);
+	return (pop_symbol(shell->current));
+}
 
 int	minishell(t_shell *shell)
 {
-	// shell->parg = init_parg();
-	// if (!shell->parg)
-	// 	return (exit_free(shell));
 	shell->ret = -1;
 	shell->current = shell->start;
-	display_prompt();
-	shell->line = readline("% ");
-	if (shell->line)
-	{
-		// ft_printf("%s#######################################\n", ORANGE);
-		// ft_printf("                 PARSING                 \n");
-		// ft_printf("#######################################%s\n", RESET);
-		parsing(shell, -1, 0);
-		print_list(shell); // exec_line();
-		if (shell->ret != 0)
-			print_parserror(shell);
-		clear_parsing(shell);
-		// free_parg(shell->parg);
-	}
-	// ft_lstclear(shell->starts, &free_token);
-	ft_printf("%s########## MINISHELL ret = %d ##########%s\n\n", CYAN, shell->ret, RESET);
+	ft_printf("%s#######################################\n", CYAN);
+	ft_printf("                 PARSER                  \n");
+	ft_printf("#######################################%s\n", RESET);
+	while (parser(shell) == T_PIPE && shell->ret == 0)
+		continue;
+	add_history(shell->line);
+	print_list(shell); // exec_line();
+	if (shell->ret > 0)
+		print_parserror(shell);
+	ft_printf("%s#######################################\n", CYAN);
+	ft_printf("                  LEXER                  \n");
+	ft_printf("#######################################%s\n", RESET);
+	!shell->ret ? ft_printf("%s############# EXECUTE LIST ############%s\n", MAG, RESET):-1;
+	clear_parsing(shell);
+	ft_printf("%s########## MINISHELL ret = %2d #########%s\n", CYAN, shell->ret, RESET);
 	return (shell->ret);
 }
