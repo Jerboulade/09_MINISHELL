@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/23 02:52:29 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/23 22:19:02 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,49 @@ int		rebuilt_path_string(char **env)
 	return (1);
 }
 
+void	fill_history(t_hist *history, int fd)
+{
+	char	*tmp;
+
+	while (history->n < HISTORY_SIZE)
+	{
+		tmp = NULL;
+		history->linetab[history->n] = get_next_line(fd);
+		if (!history->linetab[history->n])
+			break;
+		tmp = ft_strchr(history->linetab[history->n], '\n');
+		if (tmp)
+			*tmp = 0;
+		add_history(history->linetab[history->n]);
+		history->n++;
+	}
+}
+
+t_hist	*init_history(void)
+{
+	int		fd;
+	t_hist	*history;
+
+	history = ft_calloc(1, sizeof(*history));
+	if (!history)
+		return (NULL);
+	history->linetab = ft_calloc(HISTORY_SIZE, sizeof(*history->linetab));
+	if (!history->linetab)
+		return (NULL);
+	history->n = 0;
+	fd = open(HISTORY_PATH, O_RDWR | O_CREAT, 0666);
+	if (fd == -1)
+	{
+		ft_printf("%s[%s%s ", CYAN, HISTORY_PATH, RED);
+		ft_printf("file corrupted.%s No history available]\n%s", CYAN, RESET);
+		close(fd);
+		return (history);
+	}
+	fill_history(history, fd);
+	close(fd);
+	return (history);
+}
+
 char	**init_env_path()
 {
 	char	*tmp;
@@ -123,7 +166,9 @@ t_shell	*init_shell(void)
 	shell->env_path = init_env_path();
 	if (!shell->env_path)
 		return (NULL);
-
+	shell->history = init_history();
+	if (!shell->history)
+		return (NULL);
 	return (shell);
 }
 
@@ -143,6 +188,7 @@ t_symbol parser(t_shell *shell)
 {
 	char *newline;
 
+	ft_printf("#######################################\n");
 	if (!shell->line)
 		shell->line = readline(display_prompt(0, 0, NULL, NULL));
 	else
@@ -157,10 +203,11 @@ t_symbol parser(t_shell *shell)
 		}
 		join_newline(shell, newline);
 	}
-	if (!shell->line)
+	ft_printf("#######################################\n");
+	if (!shell->line)				// case : ctrl d
 		shell->ret = -1;
 	else if (is_empty(shell->line))
-		shell->ret = 0;
+		shell->ret = 0;				// case : no command
 	else
 		shell->ret = parsing(shell);
 	return (pop_symbol(shell->current));
@@ -175,13 +222,14 @@ int	minishell(t_shell *shell)
 	ft_printf("#######################################%s\n", RESET);
 	while (parser(shell) == T_PIPE && shell->ret == 0)
 		continue;
-	add_history(shell->line);
-	print_list(shell); // exec_line();
+	update_history(shell, shell->history);
 	if (shell->ret > 0)
 		print_parserror(shell);
-	ft_printf("%s#######################################\n", CYAN);
-	ft_printf("                  LEXER                  \n");
-	ft_printf("#######################################%s\n", RESET);
+	if (shell->ret == 0)
+		shell->ret = lexer(shell);
+	if (shell->ret > 0)
+		print_parserror(shell);
+	print_list(shell); // exec_line();
 	!shell->ret ? ft_printf("%s############# EXECUTE LIST ############%s\n", MAG, RESET):-1;
 	clear_parsing(shell);
 	ft_printf("%s########## MINISHELL ret = %2d #########%s\n", CYAN, shell->ret, RESET);

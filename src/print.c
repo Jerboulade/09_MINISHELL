@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/23 02:27:13 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/24 00:29:15 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,18 @@ void	print_list(t_shell *shell)
 		token = (t_token *)tmp->data;
 		ft_printf("%s<%s%03d%s|%s", ORANGE, RESET, token->pos, ORANGE, RESET);
 		ft_printf("%-20.20s*%s|%s", token->key, ORANGE, RESET);
-		if (token->symbol == T_COMMAND)
-			symbol = "T_COMMAND";
+		if (token->symbol == T_BIN)
+			symbol = "T_BIN";
 		else if (token->symbol == T_BUILTIN)
 			symbol = "T_BUILTIN";
-		else if (token->symbol == T_ARG)
-			symbol = "T_ARG";
+		// else if (token->symbol == T_ARG)
+		// 	symbol = "T_ARG";
 		else if (token->symbol == T_PIPE)
 			symbol = "T_PIPE";
 		else if (token->symbol == T_REDIRECT)
 			symbol = "T_REDIRECT";
-		else if (token->symbol == T_INVALID)
-			symbol = "T_INVALID";
+		else if (token->symbol == T_FILE)
+			symbol = "T_FILE";
 		else if (token->symbol == T_START)
 			symbol = "T_START";
 		else if (token->symbol == T_WORD)

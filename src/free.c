@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/20 02:53:28 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/23 19:16:22 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ void	clear_parsing(t_shell *shell)
 {
 	if (!shell)
 		return ;
-	if (shell->line)
-		free(shell->line);
+	// if (shell->line)
+	// 	free(shell->line);
 	shell->line = NULL;
 	if (shell->start && shell->start->next)
 		ft_lstclear(&shell->start->next, &free_token);
@@ -57,6 +57,23 @@ void	free_token(void *token)
 	free(tmp);
 }
 
+void	free_history(t_hist *history)
+{
+	int	i;
+
+	i = -1;
+	if (!history)
+		return ;
+	while (history->linetab && ++i < history->n)
+	{
+		if (history->linetab[i])
+			free(history->linetab[i]);
+	}
+	if (history->linetab)
+		free(history->linetab);
+	free(history);
+}
+
 void	free_shell(t_shell *shell)
 {
 	if (!shell)
@@ -64,9 +81,7 @@ void	free_shell(t_shell *shell)
 	if (shell->start)
 		ft_lstclear(&shell->start, &free_token);
 	// ft_printf("free %s\n", shell->line);
-	if (shell->line)
-		free(shell->line);
-	shell->line = NULL;
+	free_history(shell->history);
 	// ft_printf("free %p\n", shell->start);
 	// free(shell->start);
 	free_env_path(shell->env_path);
