@@ -6,7 +6,7 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/06/23 21:56:20 by jcarere          ###   ########.fr        #
+#    Updated: 2022/06/24 17:28:18 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,8 @@ RLINCL = -I/usr/local/Cellar/readline/8.1.2/include
 RLLIB = -L/usr/local/Cellar/readline/8.1.2/lib -lreadline
 SRCDIR = ./src/
 OBJDIR = ./obj/
-HISTORYDIR = ./history/
-HISTORYFILE = $(HISTORYDIR)history.log
+DATADIR = ./datafile/
+HISTORYFILE = $(DATADIR)history.log
 INCL = ./includes/
 LIBDIR = ./libft/
 LIB = $(LIBDIR)libft.a
@@ -38,7 +38,7 @@ $(OBJDIR)%.o: $(SRCDIR)%.c
 	@printf "$(C_MAG)Compiling 'minishell':         \
 	$(C_CYAN)[$(C_ORANGE)$<$(C_CYAN)] $(C_RESET) $(L_CLEAR)\r"
 
-$(NAME): $(HISTORYDIR) $(OBJDIR) $(OBJ)
+$(NAME): $(DATADIR) $(OBJDIR) $(OBJ)
 	@printf "$(L_CLEAR)\r"
 	@make -s -C $(LIBDIR)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIB) $(RLLIB)
@@ -49,8 +49,8 @@ $(NAME): $(HISTORYDIR) $(OBJDIR) $(OBJ)
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
-$(HISTORYDIR):
-	@mkdir -p $(HISTORYDIR)
+$(DATADIR):
+	@mkdir -p $(DATADIR)
 
 all: $(NAME)
 
@@ -67,7 +67,7 @@ clean:
 
 fclean: clean
 	@$(REMOVE) $(LIB)
-	@$(REMOVE) $(HISTORYDIR)
+	@$(REMOVE) $(DATADIR)
 	@printf "$(C_CYAN)'libft.a'  : $(C_RED)deleted           \
 	$(C_CYAN)[$(C_GREEN)✔$(C_CYAN)]$(C_RESET)\n"
 	@$(REMOVE) $(NAME)

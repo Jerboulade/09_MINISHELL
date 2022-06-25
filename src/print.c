@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/24 00:29:15 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/25 23:36:11 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,16 @@ void	print_list(t_shell *shell)
 		// 	symbol = "T_ARG";
 		else if (token->symbol == T_PIPE)
 			symbol = "T_PIPE";
+		else if (token->symbol == T_REDIRIN)
+			symbol = "T_REDIRIN";
+		else if (token->symbol == T_REDIROUT)
+			symbol = "T_REDIROUT";
 		else if (token->symbol == T_REDIRECT)
 			symbol = "T_REDIRECT";
+		else if (token->symbol == T_APPEND)
+			symbol = "T_APPEND";
+		else if (token->symbol == T_HEREDOC)
+			symbol = "T_HEREDOC";
 		else if (token->symbol == T_FILE)
 			symbol = "T_FILE";
 		else if (token->symbol == T_START)

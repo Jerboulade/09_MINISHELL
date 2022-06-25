@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/23 21:02:08 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/25 00:08:26 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ char	*red_key(t_shell *shell, int *i)
 {
 	char	*key;
 
-	// ft_printf("\nIN RED KEY\n");
+	ft_printf("\nIN RED KEY\n");
 	key = NULL;
 	if (shell->line[*i] == '|')
 		key = (ft_strdup("| "));
@@ -40,12 +40,12 @@ char	*arg_key(t_shell *shell, int end)
 	char	*key;
 	size_t	len;
 
-	// ft_printf("\nIN ARG KEY \n");
+	ft_printf("\nIN ARG KEY \n");
 	start = get_start_index(shell);
 	len = end - start;
 	key = ft_calloc(len + 1, sizeof(*key));
 	if (!key)
-		return (NULL);
+		exit_free(shell);
 	ft_strlcpy(key, shell->line + start, len + 1);
 	return (key);
 }
@@ -54,7 +54,7 @@ int	get_token(t_shell *shell, int *i)
 {
 	int ret;
 
-	// ft_printf("\nIN GET TOKEN \n");
+	ft_printf("\nIN GET TOKEN \n");
 	if (!is_start(shell->line, *i))
 	{
 		ret = tokenizer(shell, arg_key(shell, *i), *i);

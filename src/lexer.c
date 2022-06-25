@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/24 03:30:39 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/24 16:40:30 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,12 @@ int	lexer(t_shell *shell)
 		else if (pop_symbol(shell->current) == T_REDIRECT)
 		{
 			pop_token(shell->current->next)->symbol = T_FILE;
+			// t_list *tmp = shell->start;
+			// while (pop_index(tmp->next) != pop_index(shell->current))
+			// 	tmp = tmp->next;
+			// tmp->next = shell->current->next;
+			// ft_lstdelone(shell->current, &free_token);
+			// shell->current = tmp;
 		}
 		else if (pop_symbol(shell->current) == T_FILE)
 		{

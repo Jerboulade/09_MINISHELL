@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/24 02:17:13 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/25 23:35:37 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@
 # define RESET "\033[0m"
 # define PROMPT_SIZE 100
 # define HISTORY_SIZE 100
-# define HISTORY_PATH "./history/history.log"
+# define HISTORY_PATH "./datafile/history.log"
+# define HEREDOC_PATH "./datafile/heredoc"
+# define HEREDOC_FILE "./heredoc"
 
 /*
 ** struct s_list prototype from libft
@@ -46,9 +48,13 @@ typedef enum e_symbol
 	T_WORD,
 	T_PIPE,
 	T_REDIRECT,
+	T_REDIRIN,
+	T_REDIROUT,
+	T_HEREDOC,
+	T_APPEND,
 	T_BIN,
 	T_BUILTIN,
-	T_FILE,
+	T_FILE
 }			t_symbol;
 
 typedef struct s_parg
@@ -114,6 +120,7 @@ int			get_cmd_path(t_shell *shell, char **key);
 /*
 ** lexer.c
 */
+void		remove_quote(char *key);
 void		increment_tokenpos(t_list *current);
 int			lexer(t_shell *shell);
 
