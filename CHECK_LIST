@@ -78,6 +78,8 @@ Si le mot réservé time précède le pipeline, les temps passés par le program
 
 Chaque commande du pipeline est exécutée comme un processus indépendant (c'est-à-dire dans un sous-shell).  
 --------------------------------------------------------------
+
+
 // Here next, we can assume that redirection token are append just before a pipe.
 // Also, all file are created even if test, test2 or test3 are replaced with an error path like a directory (..)
 // WEIRD BEHAVIOUR:
@@ -156,3 +158,27 @@ bash-3.2$ cat test2
 bash-3.2$ cat test3
 coucou\nsalut
 ------------------------------------------------
+// OTHER WEIRD BEHAVIOUR
+------------------------------------------------
+bash-3.2$ cat << c | grep s
+> salut
+> c
+salut                                         OK
+------------------------------------------------
+bash-3.2$ echo test > test
+bash-3.2$ echo salut > test2
+bash-3.2$ cat test test2 | grep s
+test
+salut                                         OK
+------------------------------------------------
+bash-3.2$ cat test << c | grep s
+> salut
+> c
+test                                       WHAT?
+------------------------------------------------
+
+
+
+MINISHELL COMMAND THAT NEED TO BE FIX
+-------------------------------------
+echo coucou > test1 | << EOF cat |    #blocked into heredoc

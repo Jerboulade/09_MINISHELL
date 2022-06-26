@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/25 23:35:37 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/26 03:37:46 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,9 @@ int			parsing(t_shell *shell);
 /*
 ** tokenizer.c
 */
+void token_push(t_shell *shell, t_token data);
 t_symbol	set_token_symbol(char *key);
-int			set_token_pos(t_shell *shell, t_token *token);
+int			set_token_pos(t_shell *shell, t_token token);
 int			tokenizer(t_shell *shell, char *key, int i);
 int			get_cmd_path(t_shell *shell, char **key);
 /*

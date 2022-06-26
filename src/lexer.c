@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/24 16:40:30 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/26 22:44:08 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,12 @@ void	remove_quote(char *key)
 
 	if (!(ft_strchr("\'\"", key[0])))
 		return ;
+	ft_printf("key =  %s", key);
+	ft_printf("ckey =  %c", *key);
+	ft_printf("ckey =  %c", *(key + 1));
+	ft_printf("pkey =  %p", key);
+	ft_printf("pkey =  %p", key + 1);
+
 	i = 0;
 	*(ft_strrchr(key, key[0])) = 0;
 	while (key[++i])
@@ -112,8 +118,8 @@ int	lexer(t_shell *shell)
 					pop_token(shell->current)->symbol = T_BUILTIN;
 				else if (is_existing_bin(shell, pop_token(shell->current)))// else check if valid cmd -> T_COMMAND + path
 					pop_token(shell->current)->symbol = T_BIN;
-				else  // else return 7
-					return (6);
+				// else  // else return 7
+				// 	return (6);
 			}
 		}
 		else if (pop_symbol(shell->current) == T_REDIRECT)
