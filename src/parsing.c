@@ -6,63 +6,11 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/26 22:39:23 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 14:22:04 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	*red_key(t_shell *shell, int *i)
-{
-	char	*key;
-
-	ft_printf("\nIN RED KEY\n");
-	key = NULL;
-	if (shell->line[*i] == '|')
-		key = (ft_strdup("| "));
-	else if (shell->line[*i] == '>' && shell->line[*i + 1] != '>')
-		key = (ft_strdup(">"));
-	else if (shell->line[*i] == '>' && shell->line[*i + 1] == '>')
-		key = (ft_strdup(">>"));
-	else if (shell->line[*i] == '<' && shell->line[*i + 1] != '<')
-		key = (ft_strdup("<"));
-	else if (shell->line[*i] == '<' && shell->line[*i + 1] == '<')
-		key = (ft_strdup("<<"));
-	if (!key)
-		return (NULL);
-	*i += ft_skipcharlen(key, key[0]);
-	return (key);
-}
-
-char	*arg_key(t_shell *shell, int end)
-{
-	int		start;
-	char	*key;
-	size_t	len;
-
-	ft_printf("\nIN ARG KEY \n");
-	start = get_start_index(shell);
-	len = end - start;
-	key = ft_calloc(len + 1, sizeof(*key));
-	if (!key)
-		exit_free(shell);
-	ft_strlcpy(key, shell->line + start, len + 1);
-	return (key);
-}
-
-void token_push(t_shell *shell, t_token data)
-{
-	t_token *token;
-
-	token = ft_calloc(1, sizeof(*token));
-	if (!token)
-		exit_free(shell);
-	ft_memcpy(token, &data, sizeof(*token));
-	shell->current->next = ft_lstnew(token);
-	if (!shell->current->next)
-		exit_free(shell);
-	shell->current = shell->current->next;
-}
 
 size_t	 meta_token(t_shell *shell, int i)
 {
@@ -88,51 +36,31 @@ size_t	 meta_token(t_shell *shell, int i)
 	return (size);
 }
 
-int	token_is_redir(t_shell *shell)
+char	*extract_key(t_shell *shell, int end)
 {
-	return (pop_symbol(shell->current) == T_REDIRIN \
-			|| pop_symbol(shell->current) == T_REDIROUT \
-			|| pop_symbol(shell->current) == T_REDIRIN \
-			|| pop_symbol(shell->current) == T_HEREDOC);
+	int		start;
+	char	*key;
+	size_t	len;
+
+	ft_printf("\nIN EXTRACT KEY \n");
+	start = get_start_index(shell);
+	len = end - start;
+	key = ft_calloc(len + 1, sizeof(*key));
+	if (!key)
+		exit_free(shell);
+	ft_strlcpy(key, shell->line + start, len + 1);
+	return (key);
 }
 
-int	last_token_is_meta(t_shell *shell)
-{
-	return (pop_symbol(shell->current) == T_REDIRIN \
-			|| pop_symbol(shell->current) == T_REDIROUT \
-			|| pop_symbol(shell->current) == T_REDIRIN \
-			|| pop_symbol(shell->current) == T_HEREDOC \
-			|| pop_symbol(shell->current) == T_PIPE);
-}
-
-int	arg_is_empty(t_shell *shell, int i)
-{
-	int start;
-
-	start = pop_index(shell->current);
-	while (start < i)
-	{
-		if (shell->line[start] != ' ') // is_whitespace
-			return (0);
-		++start;
-	}
-	return (1);
-}
-
-int	is_exception(t_shell *shell, char c)
-{
-	return (pop_symbol(shell->current) == T_PIPE && c == '<');
-}
-
-int	get_token(t_shell *shell, int *i)
+int	parse_sequence(t_shell *shell, int *i)
 {
 	int ret;
 
-	ft_printf("\nIN GET TOKEN \n");
-	ft_printf("c = %c\n", shell->line[*i]);
-	if (!is_start(shell->line, *i) && !arg_is_empty(shell, *i)) /*!shell->line[*i] ||  !ft_strchr("|><", shell->line[*i])*/
+	ft_printf("\nIN PARSE SEQUENCE \n");
+	// ft_printf("c = %c\n", shell->line[*i]);
+	if (!is_start(shell->line, *i) && !is_empty_sequence(shell, *i)) /*!shell->line[*i] ||  !ft_strchr("|><", shell->line[*i])*/
 	{
-		ret = tokenizer(shell, arg_key(shell, *i), *i);
+		ret = tokenizer(shell, extract_key(shell, *i), *i);
 		if (ret)
 			return (ret);
 	}
@@ -156,13 +84,13 @@ int	get_token(t_shell *shell, int *i)
 	return (0);
 }
 
-int	parsing(t_shell *shell)
+int	parse_line(t_shell *shell)
 {
 	int		i;
 	int		ret;
 	char	quote;
 
-	ft_printf("\n%s############## IN PARSING ############\n", GREEN, RESET);
+	ft_printf("\n%s############ IN PARSE LINE ############\n", GREEN, RESET);
 	print_parserror(shell);
 	quote = 0;
 	i = get_start_index(shell);
@@ -171,7 +99,7 @@ int	parsing(t_shell *shell)
 		// ft_printf("%s###char =  %c%s\n", GREEN, shell->line[i], RESET);
 		if ((!shell->line[i] || ft_strchr("|> <", shell->line[i])) && !quote)
 		{
-			ret = get_token(shell, &i);
+			ret = parse_sequence(shell, &i);
 			if (ret != 0 || !shell->line[i])
 				return (ret);
 		}
@@ -184,4 +112,33 @@ int	parsing(t_shell *shell)
 			i++;
 	}
 	return (0);
+}
+
+t_symbol parser(t_shell *shell)
+{
+	char *newline;
+
+	ft_printf("#######################################\n");
+	if (!shell->line)
+		shell->line = readline(display_prompt(0, 0, NULL, NULL));
+	else
+	{
+		newline = readline(display_prompt(0, 0, NULL, "pipe> "));
+		if (!newline)
+			return (-1);
+		else if (is_empty(newline))
+		{
+			free(newline);
+			return (T_PIPE);
+		}
+		join_newline(shell, newline);
+	}
+	ft_printf("#######################################\n");
+	if (!shell->line)				// case : ctrl d
+		shell->ret = -1;
+	else if (is_empty(shell->line))
+		shell->ret = 0;				// case : no command
+	else
+		shell->ret = parse_line(shell);
+	return (pop_symbol(shell->current));
 }

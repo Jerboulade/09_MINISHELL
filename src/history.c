@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 04:02:21 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/24 02:37:57 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/27 16:35:32 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,22 @@ void update_history(t_shell *shell, t_hist *hist)
 	hist->linetab[hist->n++] = shell->line;
 	add_history(shell->line);
 	close(fd);
+}
+
+void	fill_history(t_hist *history, int fd)
+{
+	char	*tmp;
+
+	while (history->n < HISTORY_SIZE)
+	{
+		tmp = NULL;
+		history->linetab[history->n] = get_next_line(fd);
+		if (!history->linetab[history->n])
+			break;
+		tmp = ft_strchr(history->linetab[history->n], '\n');
+		if (tmp)
+			*tmp = 0;
+		add_history(history->linetab[history->n]);
+		history->n++;
+	}
 }

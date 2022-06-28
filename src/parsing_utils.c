@@ -6,11 +6,23 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:29:11 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/23 04:49:51 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 14:13:10 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void join_newline(t_shell *shell, char *newline)
+{
+	char *tmp;
+
+	tmp = ft_strjoin(shell->line, newline);
+	if (!tmp)
+		exit_free(shell);
+	free(newline);
+	free(shell->line);
+	shell->line = tmp;
+}
 
 size_t	ft_skipcharlen(const char *str, char c)
 {
@@ -22,6 +34,18 @@ size_t	ft_skipcharlen(const char *str, char c)
 	while (*str && *tmp == c)
 		tmp++;
 	return (tmp - str);
+}
+
+int is_expandable(char *key)
+{
+	if (key[0] == '\'' && key[ft_strlen(key) - 1] == '\'')
+		return (0);
+	return ((ft_strchr(key, '$') != NULL));
+}
+
+int	is_whitespace(char c)
+{
+	return (c == ' ' || c == '\t');
 }
 
 int	is_end(char *line, int i)
@@ -64,16 +88,6 @@ int	is_start(char *line, int i)
 	return (1);
 }
 
-// int	ret_pars(t_shell *shell, int i, int ret)
-// {
-// 	// ft_printf("\nIN ret_pars\n");
-// 	// ft_printf("ret = %d\n", ret);
-// 	shell->err_index = i;
-// 	shell->ret = ret;
-// 	// ft_printf("IF (RET)\n");
-// 	// ft_printf("PARG: ret[%d] pos[%d]\n", parg->ret, parg->pos);
-// 	return (1);
-// }
 
 void	set_quote(char *quote, char *line)
 {

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/26 03:37:46 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 14:18:10 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # define HISTORY_PATH "./datafile/history.log"
 # define HEREDOC_PATH "./datafile/heredoc"
 # define HEREDOC_FILE "./heredoc"
+# define VARNAMESIZE_MAX 100
 
 /*
 ** struct s_list prototype from libft
@@ -86,48 +87,72 @@ typedef struct s_shell
 	t_list		*start;
 	t_list		*current;
 	char		*line;
+	char		**env;
 	char		**env_path;
 	int			ret;
 	t_hist		*history;
 	int			fd_redirect;
 }				t_shell;
 /*
+** init.c
+*/
+int			rebuilt_envpath_string(char **env);
+t_hist		*init_history(void);
+char		**init_env_path(void);
+t_shell		*init_shell(char **env);
+/*
+** init_utils.c
+*/
+/*
 ** minishell.c
 */
 char		*display_prompt(int i, int j, char *tmp, char *miniprompt);
-int			rebuilt_path_string(char **env);
-t_hist		*init_history(void);
-void		fill_history(t_hist *history, int fd);
-char		**init_env_path(void);
-void		join_newline(t_shell *shell, char *newline);
-t_shell		*init_shell(void);
-t_symbol	parser(t_shell *shell);
 int			minishell(t_shell *shell);
 /*
 ** parsing.c
 */
-char		*red_key(t_shell *shell, int *i);
-char		*arg_key(t_shell *shell, int end);
-int			get_token(t_shell *shell, int *i);
-int			parsing(t_shell *shell);
+size_t	 	meta_token(t_shell *shell, int i);
+char		*extract_key(t_shell *shell, int end);
+int			parse_sequence(t_shell *shell, int *i);
+int			parse_line(t_shell *shell);
+t_symbol 	parser(t_shell *shell);
+/*
+** parsing_check.c
+*/
+int			token_is_redir(t_shell *shell);
+int			last_token_is_meta(t_shell *shell);
+int			is_empty_sequence(t_shell *shell, int i);
+int			is_exception(t_shell *shell, char c);
 /*
 ** tokenizer.c
 */
-void token_push(t_shell *shell, t_token data);
-t_symbol	set_token_symbol(char *key);
-int			set_token_pos(t_shell *shell, t_token token);
+int			in_heredoc(int fd, char *key);
+int			handle_heredoc(char *key);
 int			tokenizer(t_shell *shell, char *key, int i);
-int			get_cmd_path(t_shell *shell, char **key);
+/*
+** expand.c
+*/
+char		*get_expanded_var(char **env, char *name, int len);
+size_t		var_len(const char *var_start);
+char		*get_expanded_key(t_shell *shell, char *key, char *newkey);
+int			get_expanded_len(t_shell *shell, char *key);
+char		*expand_key(t_shell *shell, char *key);
 /*
 ** lexer.c
 */
+int			is_existing_bin(t_shell *shell, t_token *token);
+void		decrement_tokenpos(t_list *next);
+int			is_builtin(char *key);
 void		remove_quote(char *key);
-void		increment_tokenpos(t_list *current);
+int			is_dir(const char *key);
 int			lexer(t_shell *shell);
 
 /*
 ** token_utils.c
 */
+t_symbol 	set_token_symbol(char *key);
+int 		set_token_pos(t_shell *shell, t_token token);
+void 		token_push(t_shell *shell, t_token data);
 t_token		*pop_token(t_list *node);
 char		*pop_key(t_list *node);
 t_symbol	pop_symbol(t_list *node);
@@ -136,13 +161,15 @@ int			pop_pos(t_list *node);
 /*
 ** parsing_utils.c
 */
-int			is_empty(const char *line);
+void 		join_newline(t_shell *shell, char *newline);
 size_t		ft_skipcharlen(const char *str, char c);
-// int			is_end(char *line, int i);
+int			is_end(char *line, int i);
+int 		is_empty(const char *line);
+int			is_whitespace(char c);
+int			is_expandable(char *key);
 int			is_start(char *line, int i);
-// int			ret_pars(t_shell *shell, int i, int ret);
 void		set_quote(char *quote, char *line);
-int			get_start_index(t_shell *shell);
+int	 		get_start_index(t_shell *shell);
 /*
 ** print.c
 */
@@ -151,8 +178,9 @@ int			print_parserror(t_shell *shell);
 /*
 ** history.c
 */
-void		rebuilt_history_file(t_shell *shell, int fd);
-void		update_history(t_shell *shell, t_hist *hist);
+void 		rebuilt_history_file(t_shell *shell, int fd);
+void 		update_history(t_shell *shell, t_hist *hist);
+void		fill_history(t_hist *history, int fd);
 /*
 ** free.c
 */

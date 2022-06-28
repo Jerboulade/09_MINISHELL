@@ -6,30 +6,30 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/23 18:42:11 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 00:10:07 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-void preprocess()
+void head(char **env)
 {
 	t_shell	*shell;
 
-	shell = init_shell();
+	shell = init_shell(env);
 	if (!shell)
 		return ;
 	while (minishell(shell) > -1)
 		continue;
 	free_shell(shell);
 }
-// TO DO: check if works without (ac, av, env) since we can use getenv
+
 int	main(int ac, char **av, char **env)
 {
 
 	(void)ac;
 	(void)av;
-	(void)env;
-	preprocess();
+	// env;
+	head(env);
 	// ########## TEST : MULTI PROCESS ##########
 	// pid_t pid;
 	// const char *whoami = "parent";
