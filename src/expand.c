@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 14:03:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 14:27:26 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 18:05:30 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ char	*get_expanded_key(t_shell *shell, char *key, char *newkey)
 		else
 			newkey[j++] = key[i++];
 	}
-	printf("newkey %s, j = %d\n", newkey, j);
+	// printf("newkey %s, j = %d\n", newkey, j);
 	return (newkey);
 }
 
@@ -102,7 +102,7 @@ int	get_expanded_len(t_shell *shell, char *key)
 		else
 			newlen += (++i != 0);
 	}
-	ft_printf("newlen = %d\n", newlen);
+	// ft_printf("newlen = %d\n", newlen);
 	return (newlen);
 }
 
@@ -111,7 +111,7 @@ char	*expand_key(t_shell *shell, char *key)
 	int		newlen;
 	char	*newkey;
 
-	ft_printf("\nIN EXPAND KEY\n");
+	// ft_printf("\nIN EXPAND KEY\n");
 	newlen = get_expanded_len(shell, key);
 	newkey = ft_calloc(newlen + 1, sizeof(*newkey));
 	if (!newkey)

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 14:22:04 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 18:08:16 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ size_t	 meta_token(t_shell *shell, int i)
 	size_t	size;
 	t_token	token;
 
-	ft_printf("\nIN META TOKEN\n");
+	// ft_printf("\nIN META TOKEN\n");
 	size = 1;
 	if (shell->line[i] == '|')
 		token.symbol = T_PIPE;
@@ -29,9 +29,9 @@ size_t	 meta_token(t_shell *shell, int i)
 		token.symbol = T_REDIRIN;
 	else if (shell->line[i] == '<' && shell->line[i + 1] == '<' && ++size)
 		token.symbol = T_HEREDOC;
-	token.pos = -1;
 	token.index = i + size;
 	token.key = NULL;
+	token.pos = set_token_pos(shell, &token);
 	token_push(shell, token);
 	return (size);
 }
@@ -42,7 +42,7 @@ char	*extract_key(t_shell *shell, int end)
 	char	*key;
 	size_t	len;
 
-	ft_printf("\nIN EXTRACT KEY \n");
+	// ft_printf("\nIN EXTRACT KEY \n");
 	start = get_start_index(shell);
 	len = end - start;
 	key = ft_calloc(len + 1, sizeof(*key));
@@ -56,7 +56,7 @@ int	parse_sequence(t_shell *shell, int *i)
 {
 	int ret;
 
-	ft_printf("\nIN PARSE SEQUENCE \n");
+	// ft_printf("\nIN PARSE SEQUENCE \n");
 	// ft_printf("c = %c\n", shell->line[*i]);
 	if (!is_start(shell->line, *i) && !is_empty_sequence(shell, *i)) /*!shell->line[*i] ||  !ft_strchr("|><", shell->line[*i])*/
 	{
@@ -90,8 +90,8 @@ int	parse_line(t_shell *shell)
 	int		ret;
 	char	quote;
 
-	ft_printf("\n%s############ IN PARSE LINE ############\n", GREEN, RESET);
-	print_parserror(shell);
+	// ft_printf("\n%s############ IN PARSE LINE ############\n", GREEN, RESET);
+	// print_parserror(shell);
 	quote = 0;
 	i = get_start_index(shell);
 	while (1)
@@ -118,7 +118,7 @@ t_symbol parser(t_shell *shell)
 {
 	char *newline;
 
-	ft_printf("#######################################\n");
+	// ft_printf("#######################################\n");
 	if (!shell->line)
 		shell->line = readline(display_prompt(0, 0, NULL, NULL));
 	else
@@ -133,7 +133,7 @@ t_symbol parser(t_shell *shell)
 		}
 		join_newline(shell, newline);
 	}
-	ft_printf("#######################################\n");
+	// ft_printf("#######################################\n");
 	if (!shell->line)				// case : ctrl d
 		shell->ret = -1;
 	else if (is_empty(shell->line))

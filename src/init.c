@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/27 18:19:21 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 18:11:00 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,11 @@ char	**init_env_path()
 		return (NULL);
 	}
 
-	ft_printf("%s############# ENV_PATH ################\n", MAG);
-	int i = -1;
-	while (env[++i])
-		printf("[%02d] %s\n", i + 1, env[i]);
-	ft_printf("%s\n", RESET);
+	// ft_printf("%s############# ENV_PATH ################\n", MAG);
+	// int i = -1;
+	// while (env[++i])
+	// 	printf("[%02d] %s\n", i + 1, env[i]);
+	// ft_printf("%s\n", RESET);
 	return (env);
 }
 

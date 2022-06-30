@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/23 19:16:22 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 18:05:51 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	free_token(void *token)
 	if (!token)
 		return ;
 	tmp = (t_token *)token;
-	ft_printf("%s############# FREE TOKEN ############## %s%s\n", CYAN, tmp->key, RESET);
+	// ft_printf("%s############# FREE TOKEN ############## %s%s\n", CYAN, tmp->key, RESET);
 	if (tmp->key)
 		free(tmp->key);
 	free(tmp);

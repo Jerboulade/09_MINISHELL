@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/26 16:57:22 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 18:23:39 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,19 +66,19 @@ int	print_parserror(t_shell *shell)
 	int	j;
 
 	// ft_printf("\nIN PERROR PARSING\n");
-	// ft_printf("PARG: ret[%d] pos[%d]\n", parg->ret, parg->pos);
 	i = pop_index(shell->current);
-	j = -1;
+	j = 0;
 	if (shell->ret > 0)
 	{
-		ft_printf("%sminishell(%d):", RED, shell->ret);
+		ft_printf("%sminishell[%d]: ", RED, shell->ret);
 		ft_printf("%ssyntax error\n", RESET);
 	}
 	ft_printf("%s%s\n", shell->line, GREEN);
-	while (++j < i)
+	while (j < i || is_whitespace(shell->line[j]))
 	{
 		if (shell->line[j] >= 0 || (j % 2))
 			ft_printf("~");
+		j++;
 	}
 	ft_printf("%s^%s\n", RED, RESET);
 	return (shell->ret);

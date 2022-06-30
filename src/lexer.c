@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 01:00:38 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 18:07:54 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	is_existing_bin(t_shell *shell, t_token *token)
 			return (exit_free(shell));
 		if (stat(path, &buf) == 0)
 		{
-			ft_printf("%s[%02d] '%s' in %s %s: Found\n", GREEN, i + 1, token->key, shell->env_path[i], RESET);
+			// ft_printf("%s[%02d] '%s' in %s %s: Found\n", GREEN, i + 1, token->key, shell->env_path[i], RESET);
 			free(token->key);
 			token->key = path;
 			return (1);
@@ -99,9 +99,9 @@ int	is_dir(const char *key)
 
 int	lexer(t_shell *shell)
 {
-	ft_printf("%s#######################################\n", CYAN);
-	ft_printf("                  LEXER                  \n");
-	ft_printf("#######################################%s\n", RESET);
+	// ft_printf("%s#######################################\n", CYAN);
+	// ft_printf("                  LEXER                  \n");
+	// ft_printf("#######################################%s\n", RESET);
 
 	if (pop_symbol(shell->current) == T_REDIRECT)
 		return (5);

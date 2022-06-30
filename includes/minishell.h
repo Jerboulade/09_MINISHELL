@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 14:18:10 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/06/28 15:40:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ int			lexer(t_shell *shell);
 ** token_utils.c
 */
 t_symbol 	set_token_symbol(char *key);
-int 		set_token_pos(t_shell *shell, t_token token);
+int 		set_token_pos(t_shell *shell, t_token *token);
 void 		token_push(t_shell *shell, t_token data);
 t_token		*pop_token(t_list *node);
 char		*pop_key(t_list *node);
