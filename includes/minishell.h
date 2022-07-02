@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 15:40:14 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 01:54:51 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,9 @@ typedef struct s_shell
 /*
 ** init.c
 */
-int			rebuilt_envpath_string(char **env);
+int			append_backslash(char **env);
 t_hist		*init_history(void);
+char		**init_env(char **env);
 char		**init_env_path(void);
 t_shell		*init_shell(char **env);
 /*
@@ -119,7 +120,7 @@ t_symbol 	parser(t_shell *shell);
 /*
 ** parsing_check.c
 */
-int			token_is_redir(t_shell *shell);
+int			token_is_redir(t_token *token);
 int			last_token_is_meta(t_shell *shell);
 int			is_empty_sequence(t_shell *shell, int i);
 int			is_exception(t_shell *shell, char c);
@@ -185,7 +186,7 @@ void		fill_history(t_hist *history, int fd);
 ** free.c
 */
 int			exit_free(t_shell *shell);
-void		free_env_path(char **env);
+void		free_tab(char **tab);
 void		clear_parsing(t_shell *shell);
 void		free_token(void *token);
 void		free_shell(t_shell *shell);

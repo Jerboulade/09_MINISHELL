@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 18:07:29 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 00:51:53 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	minishell(t_shell *shell)
 		shell->ret = lexer(shell);
 	if (shell->ret > 0)
 		print_parserror(shell);
-	// print_list(shell); // exec_line();
+	print_list(shell);
 	// !shell->ret ? ft_printf("%s############# EXECUTE LIST ############%s\n", MAG, RESET):-1;
 	clear_parsing(shell);
 	// ft_printf("%s########## MINISHELL ret = %2d #########%s\n", CYAN, shell->ret, RESET);

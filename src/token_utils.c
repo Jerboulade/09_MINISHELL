@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 01:55:11 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 15:40:30 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 02:27:52 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,14 @@ int set_token_pos(t_shell *shell, t_token *token)
 {
 	// if (token->symbol == T_PIPE || token->symbol == T_REDIRECT)
 	// 	return (-1);
-	if (pop_symbol(shell->current) == T_START)
-		return (0);
+	// if (pop_symbol(shell->current) == T_START)
+	// 	return (0);
 	if (token->symbol == T_PIPE)
 		return (-1);
+	else if (token_is_redir(token) && pop_pos(shell->current) == -1)
+		return (pop_pos(shell->current));
+	else if (token_is_redir(pop_token(shell->current)))
+		return (pop_pos(shell->current));
 	return (pop_pos(shell->current) + 1);
 }
 

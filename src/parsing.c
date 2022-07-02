@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 18:08:16 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 01:56:08 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	parse_sequence(t_shell *shell, int *i)
 		// 	return (ret);
 	}
 	*i += ft_skipcharlen(shell->line + *i, ' ');
-	if (!shell->line[*i] && token_is_redir(shell))
+	if (!shell->line[*i] && token_is_redir(pop_token(shell->current)))
 		return (4);
 	// if (shell->line[*i] && ft_strchr("|><", shell->line[*i]))
 	// 	return (2);

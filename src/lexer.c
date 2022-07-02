@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 18:07:54 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 03:00:27 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ int	lexer(t_shell *shell)
 	// ft_printf("%s#######################################\n", CYAN);
 	// ft_printf("                  LEXER                  \n");
 	// ft_printf("#######################################%s\n", RESET);
+	t_list *tmp_next;
 
 	if (pop_symbol(shell->current) == T_REDIRECT)
 		return (5);
@@ -110,7 +111,7 @@ int	lexer(t_shell *shell)
 	{
 		if (pop_symbol(shell->current) == T_WORD)
 		{
-			remove_quote(pop_key(shell->current));
+			// remove_quote(pop_key(shell->current));
 			if (pop_pos(shell->current) == 0)// if pos = 0
 			{
 				if (is_builtin(pop_key(shell->current))) //if builtin -> T_BUILTIN
@@ -121,27 +122,20 @@ int	lexer(t_shell *shell)
 				// 	return (6);
 			}
 		}
-		else if (pop_symbol(shell->current) == T_REDIRECT)
+		// else if (pop_symbol(shell->current) == T_REDIRECT)
+		else if (token_is_redir(pop_token(shell->current)))
 		{
-			pop_token(shell->current->next)->symbol = T_FILE;
-			// t_list *tmp = shell->start;
-			// while (pop_index(tmp->next) != pop_index(shell->current))
-			// 	tmp = tmp->next;
-			// tmp->next = shell->current->next;
-			// ft_lstdelone(shell->current, &free_token);
-			// shell->current = tmp;
-		}
-		else if (pop_symbol(shell->current) == T_FILE)
-		{
-			remove_quote(pop_key(shell->current));
-			if (shell->current->next)
-				decrement_tokenpos(shell->current->next);
-			if (is_dir(pop_key(shell->current)))
-				return (7);
+			// pop_token(shell->current->next)->symbol = T_FILE;
+			tmp_next = shell->current->next;
+			pop_token(shell->current)->key = pop_key(tmp_next);
+			pop_token(tmp_next)->key = NULL;
+			shell->current->next = shell->current->next->next;
+			ft_lstdelone(tmp_next, &free_token);
+			// if (is_dir(pop_key(shell->current)))
+			// 	return (7);
 			// check if not dir : return 6
 			//       else intepret quote
 		}
-
 		shell->current = shell->current->next;
 	}
 	return (0);

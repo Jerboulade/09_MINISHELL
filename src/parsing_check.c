@@ -6,18 +6,18 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:43:01 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/27 17:37:58 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 02:17:52 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	token_is_redir(t_shell *shell)
+int	token_is_redir(t_token *token)
 {
-	return (pop_symbol(shell->current) == T_REDIRIN \
-			|| pop_symbol(shell->current) == T_REDIROUT \
-			|| pop_symbol(shell->current) == T_REDIRIN \
-			|| pop_symbol(shell->current) == T_HEREDOC);
+	return (token->symbol == T_REDIRIN \
+			|| token->symbol == T_REDIROUT \
+			|| token->symbol == T_APPEND \
+			|| token->symbol == T_HEREDOC);
 }
 
 int	last_token_is_meta(t_shell *shell)

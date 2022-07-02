@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 18:28:13 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 00:43:12 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ void head(char **env)
 	t_shell	*shell;
 
 	shell = init_shell(env);
-	if (!shell)
-		return ;
 	while (minishell(shell) > -1)
 		continue;
 	free_shell(shell);

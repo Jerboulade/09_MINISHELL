@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 18:05:51 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 00:41:23 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,16 @@ void	clear_parsing(t_shell *shell)
 	// ft_printf("\nIN CLEAR PARSING start->next = %p\n", shell->start->next);
 }
 
-void	free_env_path(char **env)
+void	free_tab(char **tab)
 {
 	int	i;
 
-	if (!env)
+	if (!tab)
 		return ;
 	i = -1;
-	while (env[++i])
-		free(env[i]);
-	free(env);
+	while (tab[++i])
+		free(tab[i]);
+	free(tab);
 }
 
 void	free_token(void *token)
@@ -84,6 +84,7 @@ void	free_shell(t_shell *shell)
 	free_history(shell->history);
 	// ft_printf("free %p\n", shell->start);
 	// free(shell->start);
-	free_env_path(shell->env_path);
+	free_tab(shell->env);
+	free_tab(shell->env_path);
 	free(shell);
 }

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 04:02:21 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/27 16:35:32 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/02 00:49:44 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ void update_history(t_shell *shell, t_hist *hist)
 {
 	int fd;
 
-	if (!shell->line  || \
-		(hist->n && ft_strequ(shell->line, hist->linetab[hist->n - 1])))
+	if (!shell->line)
 		return ;
-	if (!*shell->line)
+	if (!*shell->line  || \
+		(hist->n && ft_strequ(shell->line, hist->linetab[hist->n - 1])))
 	{
 		free(shell->line);
 		return ;
