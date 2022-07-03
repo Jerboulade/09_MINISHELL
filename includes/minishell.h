@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 01:54:51 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 02:38:18 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@
 # include <sys/param.h>
 # include <sys/stat.h>
 
-# define CYAN "\033[1;36m"
-# define GREEN "\033[1;32m"
-# define MAG "\033[1;35m"
-# define RED "\033[1;31m"
-# define ORANGE "\033[1;33m"
-# define RESET "\033[0m"
+# define CYAN "\001\033[1;36m\002"
+# define GREEN "\001\033[1;32m\002"
+# define MAG "\001\033[1;35m\002"
+# define RED "\001\033[1;31m\002"
+# define ORANGE "\001\033[1;33m\002"
+# define RESET "\001\033[0m\002"
 # define PROMPT_SIZE 100
 # define HISTORY_SIZE 100
 # define HISTORY_PATH "./datafile/history.log"
@@ -48,7 +48,7 @@ typedef enum e_symbol
 	T_EMPTY,
 	T_WORD,
 	T_PIPE,
-	T_REDIRECT,
+	T_NEWLINE,
 	T_REDIRIN,
 	T_REDIROUT,
 	T_HEREDOC,
@@ -102,34 +102,46 @@ char		**init_env(char **env);
 char		**init_env_path(void);
 t_shell		*init_shell(char **env);
 /*
-** init_utils.c
-*/
-/*
 ** minishell.c
 */
-char		*display_prompt(int i, int j, char *tmp, char *miniprompt);
 int			minishell(t_shell *shell);
 /*
 ** parsing.c
 */
-size_t	 	meta_token(t_shell *shell, int i);
 char		*extract_key(t_shell *shell, int end);
 int			parse_sequence(t_shell *shell, int *i);
 int			parse_line(t_shell *shell);
+char		*display_prompt(int i, int j, char *tmp, char *miniprompt);
 t_symbol 	parser(t_shell *shell);
 /*
-** parsing_check.c
+** parsing_utils.c
 */
-int			token_is_redir(t_token *token);
-int			last_token_is_meta(t_shell *shell);
-int			is_empty_sequence(t_shell *shell, int i);
-int			is_exception(t_shell *shell, char c);
+void		remove_quote(char *key);
+void 		join_newline(t_shell *shell, char *newline);
+size_t		ft_skipcharlen(const char *str, char c);
+void		set_quote(char *quote, char *line);
+int	 		get_start_index(t_shell *shell);
 /*
 ** tokenizer.c
 */
+void		token_add_newline(t_shell *shell);
 int			in_heredoc(int fd, char *key);
 int			handle_heredoc(char *key);
+size_t	 	meta_token(t_shell *shell, int i);
 int			tokenizer(t_shell *shell, char *key, int i);
+/*
+** token_utils.c
+*/
+int 		set_token_pos(t_shell *shell, t_token *token);
+void 		token_push(t_shell *shell, t_token data);
+/*
+** token_pop.c
+*/
+t_token		*pop_token(t_list *node);
+char		*pop_key(t_list *node);
+t_symbol	pop_symbol(t_list *node);
+int			pop_index(t_list *node);
+int			pop_pos(t_list *node);
 /*
 ** expand.c
 */
@@ -141,36 +153,24 @@ char		*expand_key(t_shell *shell, char *key);
 /*
 ** lexer.c
 */
-int			is_existing_bin(t_shell *shell, t_token *token);
-void		decrement_tokenpos(t_list *next);
-int			is_builtin(char *key);
-void		remove_quote(char *key);
-int			is_dir(const char *key);
+t_list		*find_nextflag(t_shell *shell);
+void		merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag);
 int			lexer(t_shell *shell);
-
 /*
-** token_utils.c
+** is_check.c
 */
-t_symbol 	set_token_symbol(char *key);
-int 		set_token_pos(t_shell *shell, t_token *token);
-void 		token_push(t_shell *shell, t_token data);
-t_token		*pop_token(t_list *node);
-char		*pop_key(t_list *node);
-t_symbol	pop_symbol(t_list *node);
-int			pop_index(t_list *node);
-int			pop_pos(t_list *node);
-/*
-** parsing_utils.c
-*/
-void 		join_newline(t_shell *shell, char *newline);
-size_t		ft_skipcharlen(const char *str, char c);
-int			is_end(char *line, int i);
+int			is_flag(t_symbol symbol);
+int			is_redir(t_symbol symbol);
+int			is_meta(t_symbol symbol);
+int			is_empty_sequence(t_shell *shell, int i);
+int			is_exception(t_shell *shell, char c);
+int			is_existing_bin(t_shell *shell, t_token *token);
+int			is_builtin(char *key);
+int			is_dir(const char *key);
 int 		is_empty(const char *line);
 int			is_whitespace(char c);
 int			is_expandable(char *key);
 int			is_start(char *line, int i);
-void		set_quote(char *quote, char *line);
-int	 		get_start_index(t_shell *shell);
 /*
 ** print.c
 */

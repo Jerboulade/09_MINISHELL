@@ -6,95 +6,50 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 03:00:27 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 02:45:54 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_existing_bin(t_shell *shell, t_token *token)
+t_list	*find_nextflag(t_shell *shell)
 {
-	int			i;
-	char		*path;
-	struct stat	buf;
+	t_list	*tmp;
+	int		moveflag;
 
-	i = -1;
-	while (shell->env_path[++i])
+	tmp = shell->current;
+	while (pop_symbol(tmp) != T_PIPE && pop_symbol(tmp) != T_NEWLINE)
+		tmp = tmp->next;
+	moveflag = pop_index(tmp);
+	while (tmp->next && pop_index(tmp->next) < moveflag)
+		tmp = tmp->next;
+	return (tmp);
+}
+
+void	merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag)
+{
+	t_list	*tmp_next;
+	t_list	*tmp_curr;
+
+	if (pop_key(shell->current) == NULL)
 	{
-		path = ft_strjoin(shell->env_path[i], token->key);
-		if (!path)
-			return (exit_free(shell));
-		if (stat(path, &buf) == 0)
-		{
-			// ft_printf("%s[%02d] '%s' in %s %s: Found\n", GREEN, i + 1, token->key, shell->env_path[i], RESET);
-			free(token->key);
-			token->key = path;
-			return (1);
-		}
-		else
-		{
-			free(path);
-			// ft_printf("%s[%02d] '%s' in %s ", RED, i + 1, key, shell->env_path[i]);
-			// ft_printf("%s[errno %d]", RESET, errno);
-			// perror(" ");
-		}
+		tmp_next = shell->current->next;
+		pop_token(shell->current)->key = pop_key(tmp_next);
+		pop_token(tmp_next)->key = NULL;
+		shell->current->next = shell->current->next->next;
+		ft_lstdelone(tmp_next, &free_token);
 	}
-	return (0);
-}
-
-void	decrement_tokenpos(t_list *next)
-{
-	while (next && pop_token(next)->pos != -1)
+	if (!moveflag || (moveflag && pop_index(shell->current) > moveflag))
 	{
-		pop_token(next)->pos--;
-		next = next->next;
+		tmp_next = find_nextflag(shell);
+		tmp_curr = shell->current;
+		tmp_prev->next = tmp_curr->next;
+		shell->current = tmp_prev;
+		tmp_prev = tmp_next;
+		tmp_next = tmp_prev->next;
+		tmp_prev->next = tmp_curr;
+		tmp_curr->next = tmp_next;
 	}
-}
-
-int		is_builtin(char *key)
-{
-	return ((ft_strequ(key, "echo") || ft_strequ(key, "cd") \
-		|| ft_strequ(key, "pwd") || ft_strequ(key, "export") \
-		|| ft_strequ(key, "unset") || ft_strequ(key, "env") \
-		|| ft_strequ(key, "exit")));
-}
-
-void	remove_quote(char *key)
-{
-	int	i;
-
-	if (!(ft_strchr("\'\"", key[0])))
-		return ;
-	// ft_printf("key =  %s\n", key);
-	// ft_printf("ckey =  %c\n", *key);
-	// ft_printf("ckey =  %c\n", *(key + 1));
-	// ft_printf("pkey =  %p\n", key);
-	// ft_printf("pkey =  %p\n", key + 1);
-	i = 0;
-	*(ft_strrchr(key, key[0])) = 0;
-	while (key[++i])
-		key[i - 1] = key[i];
-	key[i - 1] = 0;
-}
-
-int	is_dir(const char *key)
-{
-	int fd;
-
-	fd = open(key, O_RDWR | O_CREAT, 0666);
-	// if (fd == -1)
-	// {
-	// struct stat statbuf;
-	//
-	// stat(key, &statbuf);
-	ft_printf("errno : %d", errno);
-	perror("error: ");
-	close(fd);
-	if (fd == -1)
-		return (1);
-	return (0);
-	// ft_printf("statbuf.st_mode = %d\nS_IFDIR = %d\nS_IFMT = %d\nS_IFREG = %d\n", statbuf.st_mode, S_IFDIR, S_IFMT, S_IFREG);
-	// return (statbuf.st_mode == S_IFDIR);
 }
 
 int	lexer(t_shell *shell)
@@ -102,40 +57,31 @@ int	lexer(t_shell *shell)
 	// ft_printf("%s#######################################\n", CYAN);
 	// ft_printf("                  LEXER                  \n");
 	// ft_printf("#######################################%s\n", RESET);
-	t_list *tmp_next;
+	t_list	*tmp_prev;
+	int		moveflag;
 
-	if (pop_symbol(shell->current) == T_REDIRECT)
+	moveflag = 0;
+	if (is_redir(pop_symbol(shell->current)))
 		return (5);
+	token_add_newline(shell);
 	shell->current = shell->start;
 	while (shell->current)
 	{
-		if (pop_symbol(shell->current) == T_WORD)
+		// print_list(shell);
+		if (pop_symbol(shell->current) == T_WORD && !pop_pos(shell->current))
 		{
-			// remove_quote(pop_key(shell->current));
-			if (pop_pos(shell->current) == 0)// if pos = 0
-			{
-				if (is_builtin(pop_key(shell->current))) //if builtin -> T_BUILTIN
-					pop_token(shell->current)->symbol = T_BUILTIN;
-				else if (is_existing_bin(shell, pop_token(shell->current)))// else check if valid cmd -> T_COMMAND + path
-					pop_token(shell->current)->symbol = T_BIN;
-				// else  // else return 7
-				// 	return (6);
-			}
+			if (is_builtin(pop_key(shell->current)))
+				pop_token(shell->current)->symbol = T_BUILTIN;
+			else if (is_existing_bin(shell, pop_token(shell->current)))
+				pop_token(shell->current)->symbol = T_BIN;
+			else
+				return (6);
 		}
-		// else if (pop_symbol(shell->current) == T_REDIRECT)
-		else if (token_is_redir(pop_token(shell->current)))
-		{
-			// pop_token(shell->current->next)->symbol = T_FILE;
-			tmp_next = shell->current->next;
-			pop_token(shell->current)->key = pop_key(tmp_next);
-			pop_token(tmp_next)->key = NULL;
-			shell->current->next = shell->current->next->next;
-			ft_lstdelone(tmp_next, &free_token);
-			// if (is_dir(pop_key(shell->current)))
-			// 	return (7);
-			// check if not dir : return 6
-			//       else intepret quote
-		}
+		else if (is_redir(pop_symbol(shell->current)))
+			merge_and_move(shell, tmp_prev, moveflag);
+		else if (is_flag(pop_symbol(shell->current)))
+			moveflag = pop_index(shell->current);
+		tmp_prev = shell->current;
 		shell->current = shell->current->next;
 	}
 	return (0);

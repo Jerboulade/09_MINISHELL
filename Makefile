@@ -6,7 +6,7 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/06/28 18:28:22 by jcarere          ###   ########.fr        #
+#    Updated: 2022/07/03 01:21:05 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ HISTORYFILE = $(DATADIR)history.log
 INCL = ./includes/
 LIBDIR = ./libft/
 LIB = $(LIBDIR)libft.a
-SRC =	main.c minishell.c init.c init_utils.c parsing.c tokenizer.c expand.c lexer.c token_utils.c history.c parsing_utils.c parsing_check.c print.c free.c
+SRC =	main.c minishell.c init.c parsing.c tokenizer.c expand.c lexer.c token_pop.c token_utils.c history.c parsing_utils.c is_check.c print.c free.c
 OBJ = $(addprefix $(OBJDIR), $(SRC:%.c=%.o))
 REMOVE = /bin/rm -rf
 C_CYAN = \033[1;96m

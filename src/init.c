@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 01:48:53 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 02:49:13 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,19 +61,8 @@ t_hist	*init_history(void)
 
 char	**init_env_path()
 {
-	// char	*tmp;
 	char	**env_path;
 
-	// tmp = ft_strdup(getenv("PATH"));
-	// if (!tmp)
-	// 	return (NULL);
-	// env = ft_split(tmp, ':');
-	// if (!env)
-	// {
-	// 	free(tmp);
-	// 	return (NULL);
-	// }
-	// free(tmp);
 	env_path = ft_split(getenv("PATH"), ':');
 	if (!env_path)
 		return (NULL);
@@ -129,11 +118,9 @@ t_shell	*init_shell(char **env)
 		exit_free(shell);
 	token->symbol = T_START;
 	token->pos = -1; // try set other anywhere else (to spare one line)
-	// token->index = 0; // check if calloc set this to zero and remove in case (to spare one line)
 	shell->start = ft_lstnew(token);
 	if (!shell->start)
 		exit_free(shell);
-	// shell->current = NULL;
 	shell->line = NULL;
 	shell->env = init_env(env);
 	if (!shell->env)

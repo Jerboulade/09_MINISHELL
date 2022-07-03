@@ -6,11 +6,24 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:29:11 by jcarere           #+#    #+#             */
-/*   Updated: 2022/06/28 14:13:10 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 02:50:48 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	remove_quote(char *key)
+{
+	int	i;
+
+	if (!(ft_strchr("\'\"", key[0])))
+		return ;
+	i = 0;
+	*(ft_strrchr(key, key[0])) = 0;
+	while (key[++i])
+		key[i - 1] = key[i];
+	key[i - 1] = 0;
+}
 
 void join_newline(t_shell *shell, char *newline)
 {
@@ -36,68 +49,12 @@ size_t	ft_skipcharlen(const char *str, char c)
 	return (tmp - str);
 }
 
-int is_expandable(char *key)
-{
-	if (key[0] == '\'' && key[ft_strlen(key) - 1] == '\'')
-		return (0);
-	return ((ft_strchr(key, '$') != NULL));
-}
-
-int	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t');
-}
-
-int	is_end(char *line, int i)
-{
-	if (!line[i])
-		return (1);
-	while (line[++i])
-	{
-		if (line[i] != ' ')
-			return (0);
-	}
-	return (1);
-}
-
-int is_empty(const char *line)
-{
-	// ft_printf("\nIN IS EMPTY\n");
-	if (!line || !*line)
-		return (1);
-	while (*line)
-	{
-		if (*line != ' ')
-			return (0);
-		++line;
-	}
-	return (1);
-}
-
-int	is_start(char *line, int i)
-{
-	if (!i)
-		return (1);
-	while (--i)
-	{
-		if (line[i] != ' ')
-			return (0);
-	}
-	if (line[i] != ' ')
-		return (0);
-	return (1);
-}
-
-
 void	set_quote(char *quote, char *line)
 {
-	// ft_printf("\nIN SET QUOTE\n");
-	// ft_printf("quote = [%c]\nc = [%c]\n", *quote, *line);
 	if (!*quote && ft_strchr(line + 1, *line))
 		*quote = *line;
 	else if (*quote == *line)
 		*quote = 0;
-	// ft_printf("new quote = [%c]\nc = [%c]\n", *quote, *line);
 }
 
 int	 get_start_index(t_shell *shell)

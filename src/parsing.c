@@ -6,35 +6,11 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 01:56:08 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 02:32:05 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-size_t	 meta_token(t_shell *shell, int i)
-{
-	size_t	size;
-	t_token	token;
-
-	// ft_printf("\nIN META TOKEN\n");
-	size = 1;
-	if (shell->line[i] == '|')
-		token.symbol = T_PIPE;
-	else if (shell->line[i] == '>' && shell->line[i + 1] != '>')
-		token.symbol = T_REDIROUT;
-	else if (shell->line[i] == '>' && shell->line[i + 1] == '>' && ++size)
-		token.symbol = T_APPEND;
-	else if (shell->line[i] == '<' && shell->line[i + 1] != '<')
-		token.symbol = T_REDIRIN;
-	else if (shell->line[i] == '<' && shell->line[i + 1] == '<' && ++size)
-		token.symbol = T_HEREDOC;
-	token.index = i + size;
-	token.key = NULL;
-	token.pos = set_token_pos(shell, &token);
-	token_push(shell, token);
-	return (size);
-}
 
 char	*extract_key(t_shell *shell, int end)
 {
@@ -69,18 +45,13 @@ int	parse_sequence(t_shell *shell, int *i)
 	{
 		if (shell->line[*i] == '|' && pop_symbol(shell->current) == T_START)
 			return (2);
-		if (last_token_is_meta(shell) && !is_exception(shell, shell->line[*i]))
+		if (is_meta(pop_symbol(shell->current)) && !is_exception(shell, shell->line[*i]))
 			return (3);
 		*i += meta_token(shell, *i);
-		// ret = tokenizer(shell, red_key(shell, i), *i);
-		// if (ret)
-		// 	return (ret);
 	}
 	*i += ft_skipcharlen(shell->line + *i, ' ');
-	if (!shell->line[*i] && token_is_redir(pop_token(shell->current)))
+	if (!shell->line[*i] && is_redir(pop_symbol(shell->current)))
 		return (4);
-	// if (shell->line[*i] && ft_strchr("|><", shell->line[*i]))
-	// 	return (2);
 	return (0);
 }
 
@@ -112,6 +83,35 @@ int	parse_line(t_shell *shell)
 			i++;
 	}
 	return (0);
+}
+
+char	*display_prompt(int i, int j, char *tmp, char *miniprompt)
+{
+	static char	prompt[PROMPT_SIZE + 42];
+
+	tmp = getenv("USER");
+	j += ft_strlcpy(prompt + j, MAG, 10);
+	while (tmp && tmp[i] && j < PROMPT_SIZE + 9)
+		prompt[j++] = tmp[i++];
+	i = 0;
+	tmp = getenv("HOSTNAME");
+	j += ft_strlcpy(prompt + j, GREEN, 10);
+	if (tmp)
+		prompt[j++] = '@';
+	while (tmp && tmp[i] && j < PROMPT_SIZE + 19)
+		prompt[j++] = tmp[i++];
+	i = 0;
+	tmp = ft_strrchr(getenv("PWD"), '/') + 1;
+	j += ft_strlcpy(prompt + j, CYAN, 10);
+	if (tmp)
+		prompt[j++] = ':';
+	while (tmp && tmp[i] && j < PROMPT_SIZE + 29)
+		prompt[j++] = tmp[i++];
+	j += ft_strlcpy(prompt + j, RESET, 10);
+	ft_strlcpy(prompt + j, "> ", 3);
+	if (miniprompt)
+		ft_strlcpy(prompt, miniprompt, ft_strlen(miniprompt) + 1);
+	return (prompt);
 }
 
 t_symbol parser(t_shell *shell)

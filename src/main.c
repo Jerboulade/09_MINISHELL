@@ -6,11 +6,12 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 00:43:12 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 02:46:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 void head(char **env)
 {
 	t_shell	*shell;
