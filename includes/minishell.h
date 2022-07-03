@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 02:38:18 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 22:42:56 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,12 @@ t_list		*find_nextflag(t_shell *shell);
 void		merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag);
 int			lexer(t_shell *shell);
 /*
+** executor.c
+*/
+int		execute(char **tab);
+char	**get_cmd_tab(t_shell *shell);
+int		executor(t_shell *shell);
+/*
 ** is_check.c
 */
 int			is_flag(t_symbol symbol);
@@ -166,7 +172,6 @@ int			is_empty_sequence(t_shell *shell, int i);
 int			is_exception(t_shell *shell, char c);
 int			is_existing_bin(t_shell *shell, t_token *token);
 int			is_builtin(char *key);
-int			is_dir(const char *key);
 int 		is_empty(const char *line);
 int			is_whitespace(char c);
 int			is_expandable(char *key);

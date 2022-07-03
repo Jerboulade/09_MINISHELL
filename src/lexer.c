@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 02:45:54 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 23:06:42 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,27 @@ void	merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag)
 	}
 }
 
+int	file_check(t_shell *shell)
+{
+	int fd;
+	t_symbol symbol;
+
+	shell->current = shell->start;
+	while (shell->current)
+	{
+		symbol = pop_symbol(shell->current);
+		if (is_redir(symbol) && symbol != T_HEREDOC)
+		{
+			fd = open(pop_key(shell->current), O_RDWR | O_CREAT, 0666);
+			if (fd == -1) //&& errno)
+				return (errno);
+			close(fd);
+		}
+		shell->current = shell->current->next;
+	}
+	return (0);
+}
+
 int	lexer(t_shell *shell)
 {
 	// ft_printf("%s#######################################\n", CYAN);
@@ -65,7 +86,7 @@ int	lexer(t_shell *shell)
 		return (5);
 	token_add_newline(shell);
 	shell->current = shell->start;
-	while (shell->current)
+	while (pop_symbol(shell->current) != T_NEWLINE)
 	{
 		// print_list(shell);
 		if (pop_symbol(shell->current) == T_WORD && !pop_pos(shell->current))
@@ -84,5 +105,5 @@ int	lexer(t_shell *shell)
 		tmp_prev = shell->current;
 		shell->current = shell->current->next;
 	}
-	return (0);
+	return (file_check(shell));
 }

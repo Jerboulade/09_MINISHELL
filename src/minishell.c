@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 01:07:49 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/03 22:28:12 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ int	minishell(t_shell *shell)
 	update_history(shell, shell->history);
 	print_list(shell);
 	// !shell->ret ? ft_printf("%s############# EXECUTE LIST ############%s\n", MAG, RESET):-1;
+	if (shell->ret == 0)
+		shell->ret = executor(shell);
 	clear_parsing(shell);
 	// ft_printf("%s########## MINISHELL ret = %2d #########%s\n", CYAN, shell->ret, RESET);
 	return (shell->ret);
