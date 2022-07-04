@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 00:41:23 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/04 22:33:33 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,22 @@ void	free_tab(char **tab)
 	while (tab[++i])
 		free(tab[i]);
 	free(tab);
+}
+
+void	free_env(t_env **env)
+{
+	t_env	*tmp;
+	t_env	*tmp_next;
+
+	tmp = *env;
+	while (tmp)
+	{
+		tmp_next = tmp->next;
+		free(tmp->str);
+		free(tmp);
+		tmp = tmp_next;
+	}
+	env = NULL;
 }
 
 void	free_token(void *token)
@@ -82,9 +98,10 @@ void	free_shell(t_shell *shell)
 		ft_lstclear(&shell->start, &free_token);
 	// ft_printf("free %s\n", shell->line);
 	free_history(shell->history);
+	free_env(&shell->senv);
 	// ft_printf("free %p\n", shell->start);
 	// free(shell->start);
-	free_tab(shell->env);
-	free_tab(shell->env_path);
+	// free_tab(shell->env);
+	// free_tab(shell->env_path);
 	free(shell);
 }

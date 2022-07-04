@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:51:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 21:33:34 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/04 22:14:44 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int		in_heredoc(int fd, char *key)
 {
 	char	*line;
 
-	line = readline(display_prompt(0, 0, NULL, "heredoc> "));
+	line = readline("heredoc> ");
 	if (!line || ft_strequ(key, line))
 	{
 		if (line)

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 01:12:40 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 00:46:24 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/04 22:29:01 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,36 +34,15 @@ int	is_meta(t_symbol symbol)
 			|| symbol == T_PIPE);
 }
 
-int	is_existing_bin(t_shell *shell, t_token *token)
+int	is_relbin(char *key)
 {
-	int			i;
-	char		*path;
 	struct stat	info;
 
-	i = -1;
-	while (shell->env_path[++i])
+	if (stat(key, &info) == 0 && (info.st_mode & S_IFMT) != S_IFDIR)
 	{
-		path = ft_strjoin(shell->env_path[i], token->key);
-		if (!path)
-			return (exit_free(shell));
-		if (stat(path, &info) == 0)
-		{
-
-			if ((info.st_mode & S_IFMT) == S_IFDIR)
-			{
-				ft_printf("%s is dir (S_KEY = %d)\n", token->key, info.st_mode & S_IFMT);
-				ft_printf("S_IFDIR = %d\nS_IFREG = %d\nS_IFCHR = %d\nS_IFBLK = %d\nS_IFLNK = %d\nS_IFIFO = %d\nS_IFSOCK = %d\n", S_IFDIR, S_IFREG, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK);
-				free(path);
-				return (0);
-			}
-			ft_printf("%s is something else (S_KEY = %d)\n", token->key, info.st_mode & S_IFMT);
-			ft_printf("S_IFDIR = %d\nS_IFREG = %d\nS_IFCHR = %d\nS_IFBLK = %d\nS_IFLNK = %d\nS_IFIFO = %d\nS_IFSOCK = %d\n", S_IFDIR, S_IFREG, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK);
-			free(token->key);
-			token->key = path;
-			return (1);
-		}
-		else
-			free(path);
+		ft_printf("%s is (S_KEY = %d)\n", key, info.st_mode & S_IFMT);
+		ft_printf("S_IFDIR = %d\nS_IFREG = %d\nS_IFCHR = %d\nS_IFBLK = %d\nS_IFLNK = %d\nS_IFIFO = %d\nS_IFSOCK = %d\n", S_IFDIR, S_IFREG, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK);
+		return (1);
 	}
 	return (0);
 }

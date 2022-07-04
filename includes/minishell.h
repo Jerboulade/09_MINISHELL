@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 22:42:56 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/04 22:29:31 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,6 @@
 # define HEREDOC_FILE "./heredoc"
 # define VARNAMESIZE_MAX 100
 
-/*
-** struct s_list prototype from libft
-** ----------------------------------
-**	typedef struct s_list
-**	{
-**		void			*data;
-**		struct s_list	*next;
-**	}					t_list;
-*/
 typedef enum e_symbol
 {
 	T_START,
@@ -57,49 +48,55 @@ typedef enum e_symbol
 	T_BUILTIN,
 	T_FILE
 }			t_symbol;
-
-typedef struct s_parg
+/*
+** struct s_list prototype from libft
+** ----------------------------------
+**	typedef struct s_list
+**	{
+**		void			*data;
+**		struct s_list	*next;
+**	}					t_list;
+*/
+typedef struct s_env
 {
-	char		*line;
-	int			pos;
-	int			ret;
-	int			error_line;
-	char		*error_file;
-
-}				t_parg;
+	char			*str;
+	struct s_env	*next;
+	struct s_env	*prev;
+}					t_env;
 
 typedef struct s_token
 {
-	int			pos;
-	int			index;
-	char		*key;
-	t_symbol	symbol;
-}				t_token;
+	int				pos;
+	int				index;
+	char			*key;
+	t_symbol		symbol;
+}					t_token;
 
 typedef struct s_hist
 {
-	char		**linetab;
-	int			n;
-}				t_hist;
+	char			**linetab;
+	int				n;
+}					t_hist;
 
 typedef struct s_shell
 {
-	t_list		*start;
-	t_list		*current;
-	char		*line;
-	char		**env;
-	char		**env_path;
-	int			ret;
-	t_hist		*history;
-	int			fd_redirect;
-}				t_shell;
+	t_list			*start;
+	t_list			*current;
+	char			*line;
+	t_env			*senv;
+	int				ret;
+	t_hist			*history;
+	int				fd_redirect;
+}					t_shell;
 /*
 ** init.c
 */
-int			append_backslash(char **env);
 t_hist		*init_history(void);
-char		**init_env(char **env);
-char		**init_env_path(void);
+// char		**init_env(char **env);
+// char		**init_env_path(void);
+t_env		*new_env(char *data);
+void		add_env(t_shell *shell, t_env *new_env);
+t_env		*init_senv(t_shell *shell, char **env);
 t_shell		*init_shell(char **env);
 /*
 ** minishell.c
@@ -111,7 +108,7 @@ int			minishell(t_shell *shell);
 char		*extract_key(t_shell *shell, int end);
 int			parse_sequence(t_shell *shell, int *i);
 int			parse_line(t_shell *shell);
-char		*display_prompt(int i, int j, char *tmp, char *miniprompt);
+char		*display_prompt(int i, int j, char *tmp, t_shell *shell);
 t_symbol 	parser(t_shell *shell);
 /*
 ** parsing_utils.c
@@ -145,23 +142,31 @@ int			pop_pos(t_list *node);
 /*
 ** expand.c
 */
-char		*get_expanded_var(char **env, char *name, int len);
-size_t		var_len(const char *var_start);
+char		*get_env(t_shell *shell, char *name);
 char		*get_expanded_key(t_shell *shell, char *key, char *newkey);
+char		*get_varname(t_shell *shell, const char *key);
+size_t		safe_strlen(const char *str);
 int			get_expanded_len(t_shell *shell, char *key);
 char		*expand_key(t_shell *shell, char *key);
 /*
 ** lexer.c
 */
+
+int			append_backslash(char **env);
 t_list		*find_nextflag(t_shell *shell);
 void		merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag);
+int			file_check(t_shell *shell);
+char		**build_pathtab(char *paths, char *key);
+int			search_relbin(t_shell *shell, t_token *token);
+int			search_absbin(t_shell *shell, t_token *token);
+int			search_command(t_shell *shell);
 int			lexer(t_shell *shell);
 /*
 ** executor.c
 */
-int		execute(char **tab);
-char	**get_cmd_tab(t_shell *shell);
-int		executor(t_shell *shell);
+int			execute(char **tab);
+char		**get_cmd_tab(t_shell *shell);
+int			executor(t_shell *shell);
 /*
 ** is_check.c
 */
@@ -170,7 +175,7 @@ int			is_redir(t_symbol symbol);
 int			is_meta(t_symbol symbol);
 int			is_empty_sequence(t_shell *shell, int i);
 int			is_exception(t_shell *shell, char c);
-int			is_existing_bin(t_shell *shell, t_token *token);
+int			is_relbin(char *key);
 int			is_builtin(char *key);
 int 		is_empty(const char *line);
 int			is_whitespace(char c);
@@ -180,7 +185,8 @@ int			is_start(char *line, int i);
 ** print.c
 */
 void		print_list(t_shell *shell);
-int			print_parserror(t_shell *shell);
+int			print_errno(t_shell *shell);
+int			print_error(t_shell *shell);
 /*
 ** history.c
 */

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 02:32:05 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/04 22:17:32 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	parse_line(t_shell *shell)
 	char	quote;
 
 	// ft_printf("\n%s############ IN PARSE LINE ############\n", GREEN, RESET);
-	// print_parserror(shell);
+	// print_error(shell);
 	quote = 0;
 	i = get_start_index(shell);
 	while (1)
@@ -85,23 +85,23 @@ int	parse_line(t_shell *shell)
 	return (0);
 }
 
-char	*display_prompt(int i, int j, char *tmp, char *miniprompt)
+char	*display_prompt(int i, int j, char *tmp, t_shell *shell)
 {
 	static char	prompt[PROMPT_SIZE + 42];
 
-	tmp = getenv("USER");
+	tmp = get_env(shell, "USER");
 	j += ft_strlcpy(prompt + j, MAG, 10);
 	while (tmp && tmp[i] && j < PROMPT_SIZE + 9)
 		prompt[j++] = tmp[i++];
 	i = 0;
-	tmp = getenv("HOSTNAME");
+	tmp = get_env(shell, "HOSTNAME");
 	j += ft_strlcpy(prompt + j, GREEN, 10);
 	if (tmp)
 		prompt[j++] = '@';
 	while (tmp && tmp[i] && j < PROMPT_SIZE + 19)
 		prompt[j++] = tmp[i++];
 	i = 0;
-	tmp = ft_strrchr(getenv("PWD"), '/') + 1;
+	tmp = ft_strrchr(get_env(shell, "PWD"), '/') + 1;
 	j += ft_strlcpy(prompt + j, CYAN, 10);
 	if (tmp)
 		prompt[j++] = ':';
@@ -109,8 +109,6 @@ char	*display_prompt(int i, int j, char *tmp, char *miniprompt)
 		prompt[j++] = tmp[i++];
 	j += ft_strlcpy(prompt + j, RESET, 10);
 	ft_strlcpy(prompt + j, "> ", 3);
-	if (miniprompt)
-		ft_strlcpy(prompt, miniprompt, ft_strlen(miniprompt) + 1);
 	return (prompt);
 }
 
@@ -120,10 +118,10 @@ t_symbol parser(t_shell *shell)
 
 	// ft_printf("#######################################\n");
 	if (!shell->line)
-		shell->line = readline(display_prompt(0, 0, NULL, NULL));
+		shell->line = readline(display_prompt(0, 0, NULL, shell));
 	else
 	{
-		newline = readline(display_prompt(0, 0, NULL, "pipe> "));
+		newline = readline("pipe> ");
 		if (!newline)
 			return (-1);
 		else if (is_empty(newline))

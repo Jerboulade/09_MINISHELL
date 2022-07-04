@@ -6,33 +6,11 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 02:49:13 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/04 22:27:09 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int		append_backslash(char **env)
-{
-	int			i;
-	char		*tmp;
-
-	i = 0;
-	while (env[i])
-		i++;
-	while (i--)
-	{
-		if (env[i][ft_strlen(env[i]) - 1] != '/')
-		{
-			tmp = ft_strjoin(env[i], "/");
-			if (!tmp)
-				return (0);
-			free(env[i]);
-			env[i] = tmp;
-		}
-	}
-	return (1);
-}
 
 t_hist	*init_history(void)
 {
@@ -59,50 +37,53 @@ t_hist	*init_history(void)
 	return (history);
 }
 
-char	**init_env_path()
+t_env	*new_env(char *data)
 {
-	char	**env_path;
+	t_env	*new;
 
-	env_path = ft_split(getenv("PATH"), ':');
-	if (!env_path)
+	new = ft_calloc(1, sizeof(*new));
+	if (!new)
 		return (NULL);
-	if (!append_backslash(env_path))
+	new->str = ft_strdup(data);
+	if (!new->str)
 		return (NULL);
-
-	ft_printf("%s############# ENV_PATH ################\n", MAG);
-	int i = -1;
-	while (env_path[++i])
-		printf("[%02d] %s\n", i + 1, env_path[i]);
-	ft_printf("%s\n", RESET);
-
-	return (env_path);
+	new->prev = NULL;
+	new->next = NULL;
+	return (new);
 }
 
-char	**init_env(char **env)
+void	add_env(t_shell *shell, t_env *new_env)
 {
-	int		len;
-	char	**env_copy;
+	t_env	*tmp;
 
-	len = 0;
-	while (env[len])
-		len++;
-	env_copy = ft_calloc(len + 1, sizeof(*env_copy));
-	if (!env_copy)
-		return (NULL);
-	env_copy[len] = NULL;
-	while (len--)
+	tmp = shell->senv;
+	if (!shell->senv)
+		shell->senv = new_env;
+	else
 	{
-		env_copy[len] = ft_strdup(env[len]);
-		if (!env_copy[len])
-			return (NULL);
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = new_env;
+		new_env->prev = tmp;
 	}
-	ft_printf("%s################# ENV #################\n", MAG);
-	int i = -1;
-	while (env_copy[++i])
-		printf("[%02d] %s\n", i + 1, env_copy[i]);
-	ft_printf("%s\n", RESET);
+}
 
-	return (env_copy);
+t_env	*init_senv(t_shell *shell, char **env)
+{
+	int		i;
+	t_env	*new;
+
+	i = -1;
+	shell->senv = NULL;
+	new = NULL;
+	while (env[++i])
+	{
+		new = new_env(env[i]);
+		if (!new)
+			return (NULL);
+		add_env(shell, new);
+	}
+	return (shell->senv);
 }
 
 t_shell	*init_shell(char **env)
@@ -122,12 +103,26 @@ t_shell	*init_shell(char **env)
 	if (!shell->start)
 		exit_free(shell);
 	shell->line = NULL;
-	shell->env = init_env(env);
-	if (!shell->env)
+	shell->senv = init_senv(shell, env);
+	if (!shell->senv)
 		exit_free(shell);
-	shell->env_path = init_env_path();
-	if (!shell->env_path)
-		exit_free(shell);
+
+	ft_printf("%s################# ENV LIST #################\n", MAG);
+	t_env *tmp = shell->senv;
+	int i = 0;
+	while (tmp)
+	{
+		ft_printf("[%02d]%s\n", i++, tmp->str);
+		tmp = tmp->next;
+	}
+	ft_printf("%s\n", RESET);
+
+	// shell->env = init_env(env);
+	// if (!shell->env)
+	// 	exit_free(shell);
+	// shell->env_path = init_env_path();
+	// if (!shell->env_path)
+	// 	exit_free(shell);
 	shell->history = init_history();
 	if (!shell->history)
 		exit_free(shell);
