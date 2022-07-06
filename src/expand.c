@@ -6,29 +6,11 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 14:03:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 16:53:02 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/05 15:18:39 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	*get_env(t_shell *shell, char *name)
-{
-	size_t	len;
-	t_env	*tmp;
-
-	if (!name)
-		return (NULL);
-	len = ft_strlen(name);
-	tmp = shell->senv;
-	while (tmp)
-	{
-		if (ft_strncmp(name, tmp->str, len) == 0 && tmp->str[len] == '=')
-			return (tmp->str + len + 1);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
 
 char	*get_expanded_key(t_shell *shell, char *key, char *newkey)
 {

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 22:32:00 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/05 18:06:18 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ void	print_list(t_shell *shell)
 int	print_errno(t_shell *shell)
 {
 	ft_printf("%sminishell[errno:%d]:%s ", RED, errno, RESET);
-	ft_printf("\'%s\' : ", pop_key(shell->current));
+	if (shell->current)
+		ft_printf("\'%s\' : ", pop_key(shell->current));
 	perror("");
 	return (errno);
 }

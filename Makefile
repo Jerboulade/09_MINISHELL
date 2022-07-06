@@ -6,7 +6,7 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/07/03 18:21:59 by jcarere          ###   ########.fr        #
+#    Updated: 2022/07/07 00:55:26 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ LIBDIR = ./libft/
 LIB = $(LIBDIR)libft.a
 SRC =	main.c minishell.c init.c parsing.c tokenizer.c expand.c lexer.c \
  		token_pop.c token_utils.c history.c parsing_utils.c is_check.c print.c \
-		free.c executor.c
+		free.c executor.c env_utils.c
 OBJ = $(addprefix $(OBJDIR), $(SRC:%.c=%.o))
 REMOVE = /bin/rm -rf
 C_CYAN = \033[1;96m

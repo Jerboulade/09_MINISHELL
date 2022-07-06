@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 22:29:31 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/07 00:55:55 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,11 @@ typedef struct s_shell
 	char			*line;
 	t_env			*senv;
 	int				ret;
+	int				parent;
+	int				end;
+	int				fd_stdin;
+	int				fd_stdout;
+	int				fd_heredoc;
 	t_hist			*history;
 	int				fd_redirect;
 }					t_shell;
@@ -92,12 +97,15 @@ typedef struct s_shell
 ** init.c
 */
 t_hist		*init_history(void);
-// char		**init_env(char **env);
-// char		**init_env_path(void);
-t_env		*new_env(char *data);
-void		add_env(t_shell *shell, t_env *new_env);
 t_env		*init_senv(t_shell *shell, char **env);
 t_shell		*init_shell(char **env);
+/*
+** env_utils.c
+*/
+t_env		*new_env(char *data);
+void		add_env(t_shell *shell, t_env *new_env);
+t_env		*get_env_ptr(t_shell *shell, char *name);
+char		*get_env(t_shell *shell, char *name);
 /*
 ** minishell.c
 */
@@ -142,7 +150,6 @@ int			pop_pos(t_list *node);
 /*
 ** expand.c
 */
-char		*get_env(t_shell *shell, char *name);
 char		*get_expanded_key(t_shell *shell, char *key, char *newkey);
 char		*get_varname(t_shell *shell, const char *key);
 size_t		safe_strlen(const char *str);
@@ -164,7 +171,8 @@ int			lexer(t_shell *shell);
 /*
 ** executor.c
 */
-int			execute(char **tab);
+
+int			execute(t_shell *shell, char **tab);
 char		**get_cmd_tab(t_shell *shell);
 int			executor(t_shell *shell);
 /*
@@ -197,6 +205,7 @@ void		fill_history(t_hist *history, int fd);
 ** free.c
 */
 int			exit_free(t_shell *shell);
+int			exit_success(t_shell *shell);
 void		free_tab(char **tab);
 void		clear_parsing(t_shell *shell);
 void		free_token(void *token);

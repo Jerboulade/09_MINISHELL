@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 22:33:33 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/06 17:02:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,21 @@
 
 int	exit_free(t_shell *shell)
 {
+	ft_printf("%s\n", "IN EXIT FREE");
 	write(STDERR_FILENO, "exit : malloc error\n", 20);
 	if (shell)
 		free_shell(shell);
 	exit(EXIT_FAILURE);
+}
+
+int	exit_success(t_shell *shell)
+{
+	int	ret;
+
+	ret = shell->ret;
+	if (shell)
+		free_shell(shell);
+	exit(ret);
 }
 
 void	clear_parsing(t_shell *shell)
@@ -99,6 +110,8 @@ void	free_shell(t_shell *shell)
 	// ft_printf("free %s\n", shell->line);
 	free_history(shell->history);
 	free_env(&shell->senv);
+	close(shell->fd_stdin);
+	close(shell->fd_stdout);
 	// ft_printf("free %p\n", shell->start);
 	// free(shell->start);
 	// free_tab(shell->env);

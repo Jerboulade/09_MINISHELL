@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 22:27:09 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/06 17:30:27 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,35 +37,26 @@ t_hist	*init_history(void)
 	return (history);
 }
 
-t_env	*new_env(char *data)
+int	update_shlvl(t_shell *shell)
 {
-	t_env	*new;
-
-	new = ft_calloc(1, sizeof(*new));
-	if (!new)
-		return (NULL);
-	new->str = ft_strdup(data);
-	if (!new->str)
-		return (NULL);
-	new->prev = NULL;
-	new->next = NULL;
-	return (new);
-}
-
-void	add_env(t_shell *shell, t_env *new_env)
-{
+	int		shlvl;
+	char	*update;
 	t_env	*tmp;
 
-	tmp = shell->senv;
-	if (!shell->senv)
-		shell->senv = new_env;
-	else
+	shlvl = ft_atoi(get_env(shell, "SHLVL")) + 1;
+	update = ft_itoa(shlvl);
+	if (!update)
+		return (0);
+	tmp = get_env_ptr(shell, "SHLVL");
+	free(tmp->str);
+	tmp->str = ft_strjoin("SHLVL=", update);
+	if (!tmp->str)
 	{
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = new_env;
-		new_env->prev = tmp;
+		free(update);
+		return (0);
 	}
+	free(update);
+	return (1);
 }
 
 t_env	*init_senv(t_shell *shell, char **env)
@@ -83,6 +74,8 @@ t_env	*init_senv(t_shell *shell, char **env)
 			return (NULL);
 		add_env(shell, new);
 	}
+	if (!update_shlvl(shell))
+		return (NULL);
 	return (shell->senv);
 }
 
@@ -126,5 +119,9 @@ t_shell	*init_shell(char **env)
 	shell->history = init_history();
 	if (!shell->history)
 		exit_free(shell);
+	shell->parent = 1;
+	shell->end = 0;
+	shell->fd_stdin = dup(STDIN_FILENO);
+	shell->fd_stdout = dup(STDOUT_FILENO);
 	return (shell);
 }

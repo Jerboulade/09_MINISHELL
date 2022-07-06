@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 23:14:38 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/06 23:13:35 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,22 +76,29 @@ void	merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag)
 
 int	file_check(t_shell *shell)
 {
-	int fd;
-	t_symbol symbol;
-
+	// int fd;
+	// t_symbol symbol;
+	//
 	shell->current = shell->start;
-	while (shell->current)
-	{
-		symbol = pop_symbol(shell->current);
-		if (is_redir(symbol) && symbol != T_HEREDOC)
-		{
-			fd = open(pop_key(shell->current), O_RDWR | O_CREAT, 0666);
-			if (fd == -1) //&& errno)
-				return (errno);
-			close(fd);
-		}
-		shell->current = shell->current->next;
-	}
+	// while (shell->current)
+	// {
+	// 	symbol = pop_symbol(shell->current);
+	// 	if (symbol == T_REDIRIN)
+	// 	{
+	// 		fd = open(pop_key(shell->current), O_RDONLY, 0666);
+	// 		if (fd == -1) //&& errno)
+	// 			return (errno);
+	// 		close(fd);
+	// 	}
+	// 	else if (symbol == T_REDIROUT)
+	// 	{
+	// 		fd = open(pop_key(shell->current), O_RDONLY, 0666);
+	// 		if (fd == -1) //&& errno)
+	// 			return (errno);
+	// 		close(fd);
+	// 	}
+	// 	shell->current = shell->current->next;
+	// }
 	return (0);
 }
 char	**build_pathtab(char *paths, char *key)
@@ -136,7 +143,7 @@ int	search_absbin(t_shell *shell, t_token *token)
 	i = -1;
 	while (path_tab[++i])
 	{
-		ft_printf("%s[%02d]_search_absbin %s%s\n", MAG, i, path_tab[i], RESET);
+		// ft_printf("%s[%02d]_search_absbin %s%s\n", MAG, i, path_tab[i], RESET);
 		if (stat(path_tab[i], &info) == 0 && (info.st_mode & S_IFMT) != S_IFDIR)
 		{
 			free(token->key);

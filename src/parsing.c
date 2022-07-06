@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 22:17:32 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/05 19:25:15 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ t_symbol parser(t_shell *shell)
 {
 	char *newline;
 
+	waitpid(-1, &shell->ret, 0);
+	shell->ret = WEXITSTATUS(shell->ret);
 	// ft_printf("#######################################\n");
 	if (!shell->line)
 		shell->line = readline(display_prompt(0, 0, NULL, shell));
