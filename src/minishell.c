@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/06 23:13:54 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/08 01:05:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	minishell(t_shell *shell)
 		print_error(shell);
 	// ft_dprintf(shell->fd_stdout, "errno after lexer= %d\n", errno);
 	update_history(shell, shell->history);
-	// print_list(shell);
+	print_list(shell);
 	// ft_dprintf(shell->fd_stdout, "errno update history = %d\n", errno);
 
 	// !shell->ret ? ft_printf("%s############# EXECUTE LIST ############%s\n", MAG, RESET):-1;
@@ -41,7 +41,6 @@ int	minishell(t_shell *shell)
 	clear_parsing(shell);
 	// waitpid(0, &shell->ret, 0);
 	// shell->ret = WEXITSTATUS(shell->ret);
-	// ft_printf("%s########## MINISHELL ret = %2d #########%s\n", CYAN, shell->ret, RESET);
-
+	ft_printf("%s######### MINISHELL ret = %2d ##########%s\n", CYAN, shell->ret, RESET);
 	return (shell->ret);
 }

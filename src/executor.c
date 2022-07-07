@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:20:40 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/07 00:52:55 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/08 01:03:25 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,16 @@ char	**get_cmd_tab(t_shell *shell)
 	return (tab);
 }
 
-int	execute(t_shell *shell, char **tab)
+int	exec_builtin(t_shell *shell, char **tab)
+{
+	if (ft_strequ("pwd", tab[0]))
+		ft_pwd(shell);
+	else
+		ft_printf("%s\n", "exec other builtin");
+	return (0);
+}
+
+int	exec_bin(t_shell *shell, char **tab)
 {
 	int i;
 
@@ -90,7 +99,7 @@ int	execute(t_shell *shell, char **tab)
 		return (errno);
 	if (pid == 0)
 	{
-		// ft_dprintf(shell->fd_stdout, "%sexecute child\n", RED);
+		// ft_dprintf(shell->fd_stdout, "%sexec_bin child\n", RED);
 		env_array = env_listoar(shell);
 		// ft_dprintf(shell->fd_stdout, "cmd = %s, first arg = %s\n", *tab, *(tab + 1));
 		execve(*tab, tab, env_array);
@@ -156,7 +165,8 @@ int	open_pipe(t_shell *shell)
 
 int redir_in(t_shell *shell, t_symbol symbol)
 {
-	int	fdin;
+	int		fdin;
+	t_hdoc	*tmp;
 
 	if (symbol == T_REDIRIN)
 	{
@@ -168,7 +178,14 @@ int redir_in(t_shell *shell, t_symbol symbol)
 		close(fdin);
 	}
 	else
-		ft_printf("%s\n", "handle heredoc");
+	{
+		// fdin = open(pop_key(shell->current), O_RDONLY, 0666);
+		dup2(shell->heredoc->fd, STDIN_FILENO);
+		close(shell->heredoc->fd);
+		tmp = shell->heredoc;
+		shell->heredoc = shell->heredoc->next;
+		free(tmp);
+	}
 	return (0);
 }
 
@@ -211,6 +228,7 @@ int	executor(t_shell *shell)
 {
 	char		**tab;
 	t_symbol	symbol;
+	t_hdoc		*tmp;
 
 	tab = NULL;
 	// ft_printf("\n%s############ IN EXECUTOR ############%s\n", GREEN, RESET);
@@ -232,10 +250,21 @@ int	executor(t_shell *shell)
 			free(tab);
 			// ft_dprintf(shell->fd_stdout, "%s quit PIPE\n", shell->parent? "[parent]" : "[child]");
 		}
-		else if (is_redir(symbol) && (!shell->parent || shell->end))
+		else if (is_redir(symbol))// && (!shell->parent || shell->end))
 		{
-			if (redirect(shell, symbol))
-				return (8);
+			if (!shell->parent || shell->end)
+			{
+				if (redirect(shell, symbol))
+					return (8);
+			}
+			else if (symbol == T_HEREDOC)
+			{
+				tmp = shell->heredoc;
+				close(tmp->fd);
+				shell->heredoc = shell->heredoc->next;
+				free(tmp);
+			}
+
 		}
 		else if (pop_pos(shell->current) == 0 && (!shell->parent || !shell->end))
 		{
@@ -248,7 +277,10 @@ int	executor(t_shell *shell)
 		if ((!shell->current || pop_pos(shell->current) == 0) && tab && (!shell->parent || shell->end))
 		{
 			// ft_dprintf(shell->fd_stdout, "%s selected for EXECUTION\n", shell->parent? "[parent]" : "[child]");
-			shell->ret = execute(shell, tab);
+			// if (symbol == T_BIN)
+				shell->ret = exec_bin(shell, tab);
+			// else
+				// shell->ret = exec_builtin(shell, tab);
 			// if (!shell->parent)
 			// 	exit_success(shell);
 			if (shell->ret)
@@ -260,6 +292,7 @@ int	executor(t_shell *shell)
 	// reset
 	dup2(shell->fd_stdin, STDIN_FILENO);
 	dup2(shell->fd_stdout, STDOUT_FILENO);
+	// close (shell->fd_heredoc);
 	shell->end = 0;
 	return (shell->ret);
 }

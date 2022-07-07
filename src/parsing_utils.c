@@ -6,24 +6,11 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:29:11 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/03 02:50:48 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/07 18:05:30 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	remove_quote(char *key)
-{
-	int	i;
-
-	if (!(ft_strchr("\'\"", key[0])))
-		return ;
-	i = 0;
-	*(ft_strrchr(key, key[0])) = 0;
-	while (key[++i])
-		key[i - 1] = key[i];
-	key[i - 1] = 0;
-}
 
 void join_newline(t_shell *shell, char *newline)
 {

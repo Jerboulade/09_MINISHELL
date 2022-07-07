@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/06 17:02:14 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/07 21:16:39 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,18 @@ int	exit_success(t_shell *shell)
 	exit(ret);
 }
 
+void	free_heredoc(t_shell *shell)
+{
+	t_hdoc	*tmp;
+
+	while (shell->heredoc)
+	{
+		tmp = shell->heredoc;
+		shell->heredoc = shell->heredoc->next;
+		free(tmp);
+	}
+}
+
 void	clear_parsing(t_shell *shell)
 {
 	if (!shell)
@@ -40,6 +52,7 @@ void	clear_parsing(t_shell *shell)
 	shell->line = NULL;
 	if (shell->start && shell->start->next)
 		ft_lstclear(&shell->start->next, &free_token);
+	free_heredoc(shell);
 	// ft_printf("\nIN CLEAR PARSING start->next = %p\n", shell->start->next);
 }
 
@@ -112,6 +125,7 @@ void	free_shell(t_shell *shell)
 	free_env(&shell->senv);
 	close(shell->fd_stdin);
 	close(shell->fd_stdout);
+	free_heredoc(shell);
 	// ft_printf("free %p\n", shell->start);
 	// free(shell->start);
 	// free_tab(shell->env);

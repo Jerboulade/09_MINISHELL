@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:51:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/04 22:14:44 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/07 21:06:56 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	token_add_newline(t_shell *shell)
 	token_push(shell, token);
 }
 
-int		in_heredoc(int fd, char *key)
+int		in_heredoc(t_shell *shell, char *key, int fd)
 {
 	char	*line;
 
@@ -34,25 +34,37 @@ int		in_heredoc(int fd, char *key)
 			free(line);
 		return (0);
 	}
+	line = expand_key(shell, line);
 	ft_dprintf(fd, "%s\n", line);
 	free(line);
 	return (1);
 
 }
 
-int	handle_heredoc(char *key)
+int	handle_heredoc(t_shell *shell, char *key)
 {
-	int fd;
+	int		fd[2];
+	t_hdoc	*heredoc;
+	t_hdoc	*tmp;
 
-	// ft_printf("\nIN HANDEL HEREDOC key [%s]\n", key);
-	fd = open(HEREDOC_PATH, O_CREAT | O_WRONLY, 0666);
-	if (fd == -1)
-		fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY, 0666);
-	if (fd == -1)
-		return (errno); // at this point, minishell could not open a fd --> check errno
-	while (in_heredoc(fd, key))
+	heredoc = ft_calloc(1, sizeof(*heredoc));
+	if (!heredoc)
+		exit_free(shell);
+	pipe(fd);
+	// close(shell->fd_heredoc);
+	while (in_heredoc(shell, key, fd[1]))
 		continue ;
-	close(fd);
+	close(fd[1]);
+	heredoc->fd = fd[0];
+	if (!shell->heredoc)
+		shell->heredoc = heredoc;
+	else
+	{
+		tmp = shell->heredoc;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = heredoc;
+	}
 	return (0);
 }
 
@@ -87,16 +99,16 @@ int	tokenizer(t_shell *shell, char *key, int i)
 	// ft_printf("\nIN TOKENIZER\n");
 	if (!key)
 		exit_free(shell);
-	if (is_expandable(key))
-	{
-		remove_quote(key);
-		key = expand_key(shell, key);
-	}
-	else
-		remove_quote(key);
+	// if (is_expandable(key))
+	// {
+		// remove_quote(key);
+	key = expand_key(shell, key);
+	// }
+	// else
+		// remove_quote(key);
 	token.symbol = T_WORD;
 	if (pop_symbol(shell->current) == T_HEREDOC && !pop_key(shell->current))
-		handle_heredoc(key);
+		handle_heredoc(shell, key);
 	token.key = key;
 	token.index = i;
 	token.pos = set_token_pos(shell, &token);

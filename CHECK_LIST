@@ -182,3 +182,9 @@ test                                       WHAT?
 MINISHELL COMMAND THAT NEED TO BE FIX
 -------------------------------------
 echo coucou > test1 | << EOF cat |    #blocked into heredoc
+
+----------------------------------------------------------------------------------
+exec builtin: when on T_PIPE, check T_BUILTIN symbol and do a kind of REVERSE PIPE
+REVERSE PIPE: open pipe do redir but dont fork
+if infinit loop try do: redir out, execute builtin, close out, redir in, continue
+----------------------------------------------------------------------------------

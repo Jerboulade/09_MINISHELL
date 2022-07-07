@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/07 00:55:55 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/08 00:13:06 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@
 # define PROMPT_SIZE 100
 # define HISTORY_SIZE 100
 # define HISTORY_PATH "./datafile/history.log"
-# define HEREDOC_PATH "./datafile/heredoc"
-# define HEREDOC_FILE "./heredoc"
 # define VARNAMESIZE_MAX 100
 
 typedef enum e_symbol
@@ -64,6 +62,12 @@ typedef struct s_env
 	struct s_env	*prev;
 }					t_env;
 
+typedef struct s_hdoc
+{
+	int				fd;
+	struct s_hdoc	*next;
+}					t_hdoc;
+
 typedef struct s_token
 {
 	int				pos;
@@ -84,12 +88,13 @@ typedef struct s_shell
 	t_list			*current;
 	char			*line;
 	t_env			*senv;
+	t_hdoc			*heredoc;
 	int				ret;
 	int				parent;
 	int				end;
 	int				fd_stdin;
 	int				fd_stdout;
-	int				fd_heredoc;
+	// int				fd_heredoc[2];
 	t_hist			*history;
 	int				fd_redirect;
 }					t_shell;
@@ -97,7 +102,7 @@ typedef struct s_shell
 ** init.c
 */
 t_hist		*init_history(void);
-t_env		*init_senv(t_shell *shell, char **env);
+t_env		*init_env(t_shell *shell, char **env);
 t_shell		*init_shell(char **env);
 /*
 ** env_utils.c
@@ -130,8 +135,8 @@ int	 		get_start_index(t_shell *shell);
 ** tokenizer.c
 */
 void		token_add_newline(t_shell *shell);
-int			in_heredoc(int fd, char *key);
-int			handle_heredoc(char *key);
+int			in_heredoc(t_shell *shell, char *key, int fd);
+int			handle_heredoc(t_shell *shell, char *key);
 size_t	 	meta_token(t_shell *shell, int i);
 int			tokenizer(t_shell *shell, char *key, int i);
 /*
@@ -172,7 +177,7 @@ int			lexer(t_shell *shell);
 ** executor.c
 */
 
-int			execute(t_shell *shell, char **tab);
+int			exec_bin(t_shell *shell, char **tab);
 char		**get_cmd_tab(t_shell *shell);
 int			executor(t_shell *shell);
 /*
@@ -210,4 +215,9 @@ void		free_tab(char **tab);
 void		clear_parsing(t_shell *shell);
 void		free_token(void *token);
 void		free_shell(t_shell *shell);
+/*
+** msh_pwd.c
+*/
+int			ft_pwd(t_shell *shell);
+
 #endif

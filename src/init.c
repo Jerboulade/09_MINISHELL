@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/06 17:30:27 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/07 22:10:46 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,13 @@ int	update_shlvl(t_shell *shell)
 	return (1);
 }
 
-t_env	*init_senv(t_shell *shell, char **env)
+t_env	*init_env(t_shell *shell, char **env)
 {
 	int		i;
 	t_env	*new;
 
 	i = -1;
-	shell->senv = NULL;
-	new = NULL;
+	shell->senv = new_env("?=0");
 	while (env[++i])
 	{
 		new = new_env(env[i]);
@@ -96,10 +95,9 @@ t_shell	*init_shell(char **env)
 	if (!shell->start)
 		exit_free(shell);
 	shell->line = NULL;
-	shell->senv = init_senv(shell, env);
+	shell->senv = init_env(shell, env);
 	if (!shell->senv)
 		exit_free(shell);
-
 	ft_printf("%s################# ENV LIST #################\n", MAG);
 	t_env *tmp = shell->senv;
 	int i = 0;
@@ -110,18 +108,13 @@ t_shell	*init_shell(char **env)
 	}
 	ft_printf("%s\n", RESET);
 
-	// shell->env = init_env(env);
-	// if (!shell->env)
-	// 	exit_free(shell);
-	// shell->env_path = init_env_path();
-	// if (!shell->env_path)
-	// 	exit_free(shell);
 	shell->history = init_history();
 	if (!shell->history)
 		exit_free(shell);
 	shell->parent = 1;
-	shell->end = 0;
+	// shell->end = 0;
 	shell->fd_stdin = dup(STDIN_FILENO);
 	shell->fd_stdout = dup(STDOUT_FILENO);
+	// shell->fd_heredoc = -1;
 	return (shell);
 }
