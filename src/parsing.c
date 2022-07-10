@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/05 19:25:15 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/09 19:37:16 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,9 @@ char	*display_prompt(int i, int j, char *tmp, t_shell *shell)
 	while (tmp && tmp[i] && j < PROMPT_SIZE + 19)
 		prompt[j++] = tmp[i++];
 	i = 0;
-	tmp = ft_strrchr(get_env(shell, "PWD"), '/') + 1;
+	tmp = get_env(shell, "PWD");
+	if (tmp)
+		tmp = ft_strrchr(tmp, '/') + (ft_strrchr(tmp, '/') != NULL);
 	j += ft_strlcpy(prompt + j, CYAN, 10);
 	if (tmp)
 		prompt[j++] = ':';

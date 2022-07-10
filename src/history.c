@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 04:02:21 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/02 00:49:44 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/11 00:08:10 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ void update_history(t_shell *shell, t_hist *hist)
 		return ;
 	}
 	if (hist->n == HISTORY_SIZE)
-		fd = open(HISTORY_PATH, O_WRONLY | O_TRUNC);
+		fd = open(hist->path, O_WRONLY | O_TRUNC);
 	else
-		fd = open(HISTORY_PATH, O_WRONLY | O_APPEND);
+		fd = open(hist->path, O_WRONLY | O_APPEND);
 	if (fd == -1)
 	{
 		free(shell->line);

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/08 00:13:06 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/10 23:56:05 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ typedef struct s_token
 typedef struct s_hist
 {
 	char			**linetab;
+	char			*path;
 	int				n;
 }					t_hist;
 
@@ -101,12 +102,13 @@ typedef struct s_shell
 /*
 ** init.c
 */
-t_hist		*init_history(void);
+int			init_history_path(t_shell *shell, t_hist *history);
 t_env		*init_env(t_shell *shell, char **env);
 t_shell		*init_shell(char **env);
 /*
 ** env_utils.c
 */
+char		*dup_env_varname(t_shell *shell, char *arg);
 t_env		*new_env(char *data);
 void		add_env(t_shell *shell, t_env *new_env);
 t_env		*get_env_ptr(t_shell *shell, char *name);
@@ -218,6 +220,13 @@ void		free_shell(t_shell *shell);
 /*
 ** msh_pwd.c
 */
-int			ft_pwd(t_shell *shell);
+int			msh_pwd(t_shell *shell);
+int			msh_echo(t_shell *shell, char **av);
+int			msh_env(t_shell *shell, char **av);
+int			check_arg_format(char *arg);
+int			msh_export(t_shell *shell, char **av);
+int			msh_unset(t_shell *shell, char **av);
+int			update_directory_path(t_shell *shell, char *name);
+int			msh_cd(t_shell *shell, char **av);
 
 #endif

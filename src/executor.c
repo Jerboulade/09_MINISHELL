@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:20:40 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/08 01:03:25 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/10 16:15:23 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,17 @@ char	**get_cmd_tab(t_shell *shell)
 int	exec_builtin(t_shell *shell, char **tab)
 {
 	if (ft_strequ("pwd", tab[0]))
-		ft_pwd(shell);
+		msh_pwd(shell);
+	else if (ft_strequ("env", tab[0]))
+		msh_env(shell, tab);
+	else if (ft_strequ("echo", tab[0]))
+		msh_echo(shell, tab);
+	else if (ft_strequ("export", tab[0]))
+		msh_export(shell, tab);
+	else if (ft_strequ("unset", tab[0]))
+		msh_unset(shell, tab);
+	else if (ft_strequ("cd", tab[0]))
+		msh_cd(shell, tab);
 	else
 		ft_printf("%s\n", "exec other builtin");
 	return (0);
@@ -99,7 +109,7 @@ int	exec_bin(t_shell *shell, char **tab)
 		return (errno);
 	if (pid == 0)
 	{
-		// ft_dprintf(shell->fd_stdout, "%sexec_bin child\n", RED);
+		// ft_dprintf(shell->fd_stdout, "%s execute child\n", RED);
 		env_array = env_listoar(shell);
 		// ft_dprintf(shell->fd_stdout, "cmd = %s, first arg = %s\n", *tab, *(tab + 1));
 		execve(*tab, tab, env_array);
@@ -170,16 +180,21 @@ int redir_in(t_shell *shell, t_symbol symbol)
 
 	if (symbol == T_REDIRIN)
 	{
-		// ft_dprintf(shell->fd_stdout, " REDIRIN [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
+		// ft_dprintf(shell->fd_stdout, " REDIR IN <[ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
 		fdin = open(pop_key(shell->current), O_RDONLY, 0666);
+		if (fdin == -1)
+			// ft_dprintf(shell->fd_stdout, "open rd failed: errno = %d\n", errno);
+		// ft_dprintf(shell->fd_stdout, "fd = %d\n", fdin);
 		if (fdin == -1)
 			return (1);
 		dup2(fdin, STDIN_FILENO);
+
 		close(fdin);
 	}
 	else
 	{
 		// fdin = open(pop_key(shell->current), O_RDONLY, 0666);
+		// ft_dprintf(shell->fd_stdout, " REDIR IN << [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
 		dup2(shell->heredoc->fd, STDIN_FILENO);
 		close(shell->heredoc->fd);
 		tmp = shell->heredoc;
@@ -195,13 +210,19 @@ int redir_out(t_shell *shell, t_symbol symbol)
 
 	if (symbol == T_REDIROUT)
 	{
-		// ft_dprintf(shell->fd_stdout, " REDIROUT [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
+		// ft_dprintf(shell->fd_stdout, " REDIR OUT > [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
 		fdout = open(pop_key(shell->current), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		if (fdout == -1)
+			ft_dprintf(shell->fd_stdout, "open wr failed: errno = %d\n", errno);
+		// ft_dprintf(shell->fd_stdout, "fd = %d\n", fdout);
 	}
 	else
 	{
-		// ft_dprintf(shell->fd_stdout, " APPEND [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
+		// ft_dprintf(shell->fd_stdout, " APPEND >> [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
 		fdout = open(pop_key(shell->current), O_WRONLY | O_CREAT | O_APPEND, 0666);
+		if (fdout == -1)
+			ft_dprintf(shell->fd_stdout, "open wr failed: errno = %d\n", errno);
+		// ft_dprintf(shell->fd_stdout, "fd = %d\n", fdout);
 	}
 	if (fdout == -1)
 		return (1);
@@ -228,7 +249,10 @@ int	executor(t_shell *shell)
 {
 	char		**tab;
 	t_symbol	symbol;
+	t_symbol	current_exec;
 	t_hdoc		*tmp;
+	int fd[2];
+
 
 	tab = NULL;
 	// ft_printf("\n%s############ IN EXECUTOR ############%s\n", GREEN, RESET);
@@ -245,9 +269,21 @@ int	executor(t_shell *shell)
 		}
 		if (symbol == T_PIPE)
 		{
-			// ft_dprintf(shell->fd_stdout, "PIPE %s\n", shell->parent? "[parent]" : "[child]");
-			open_pipe(shell);
-			free(tab);
+			if (current_exec == T_BIN)
+			{
+			// ft_dprintf(shell->fd_stdout, "PIPE(bin) %s\n", shell->parent? "[parent]" : "[child]");
+				open_pipe(shell);
+				free(tab);
+			}
+			else if (current_exec == T_BUILTIN)
+			{
+				// ft_dprintf(shell->fd_stdout, "PIPE(builtin) %s\n", shell->parent? "[parent]" : "[child]");
+
+				pipe(fd);
+				dup2(fd[1], STDOUT_FILENO);
+				close(fd[1]);
+				shell->end = 1;
+			}
 			// ft_dprintf(shell->fd_stdout, "%s quit PIPE\n", shell->parent? "[parent]" : "[child]");
 		}
 		else if (is_redir(symbol))// && (!shell->parent || shell->end))
@@ -269,18 +305,26 @@ int	executor(t_shell *shell)
 		else if (pop_pos(shell->current) == 0 && (!shell->parent || !shell->end))
 		{
 			tab = get_cmd_tab(shell);
-			// ft_dprintf(shell->fd_stdout, "tab ptr in %s %p\n",shell->parent? "[parent]" : "[child]", tab);
-
+			current_exec = pop_symbol(shell->current);
+			// ft_dprintf(shell->fd_stdout, "GET CMD TABt for %s (ptr:%p)\n",shell->parent? "[parent]" : "[child]", tab);
 		}
 		shell->current = shell->current->next;
 		// ft_dprintf(shell->fd_stdout, "##### TOKENlist++ for %s\n", shell->parent? "[parent]" : "[child]");
 		if ((!shell->current || pop_pos(shell->current) == 0) && tab && (!shell->parent || shell->end))
 		{
 			// ft_dprintf(shell->fd_stdout, "%s selected for EXECUTION\n", shell->parent? "[parent]" : "[child]");
-			// if (symbol == T_BIN)
+			if (current_exec == T_BIN)
 				shell->ret = exec_bin(shell, tab);
-			// else
-				// shell->ret = exec_builtin(shell, tab);
+			else
+			{
+				shell->ret = exec_builtin(shell, tab);
+				// ft_dprintf(shell->fd_stdout, "%s who's executed builtin now listen from [%d]\n", shell->parent? "[parent]" : "[child]", fd[0]);
+				dup2(fd[0], STDIN_FILENO);
+				dup2(shell->fd_stdout, STDOUT_FILENO);
+				free(tab);
+				close(fd[0]);
+				shell->end = 0;
+			}
 			// if (!shell->parent)
 			// 	exit_success(shell);
 			if (shell->ret)
@@ -289,7 +333,8 @@ int	executor(t_shell *shell)
 		}
 		// ft_dprintf(shell->fd_stdout, "##### WHILE BOTTOM %s\n", shell->parent? "[parent]" : "[child]");
 	}
-	// reset
+	// ft_dprintf(shell->fd_stdout, "##### RESET FDs %s\n", shell->parent? "[parent]" : "[child]");
+
 	dup2(shell->fd_stdin, STDIN_FILENO);
 	dup2(shell->fd_stdout, STDOUT_FILENO);
 	// close (shell->fd_heredoc);

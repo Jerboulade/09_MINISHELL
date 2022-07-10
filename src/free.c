@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/07 21:16:39 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/10 23:59:34 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ void	free_history(t_hist *history)
 	}
 	if (history->linetab)
 		free(history->linetab);
+	if (history->path)
+		free(history->path);
 	free(history);
 }
 

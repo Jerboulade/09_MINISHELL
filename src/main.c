@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/07 02:41:50 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/10 18:45:56 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void head(char **env)
 int	main(int ac, char **av, char **env)
 {
 
+	// ft_printf("path = %s\n", av[0]);
 	(void)ac;
 	(void)av;
 	// env;

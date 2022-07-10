@@ -6,11 +6,39 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:16:28 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/05 15:18:53 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/09 17:26:04 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+
+char	*dup_env_varname(t_shell *shell, char *arg)
+{
+	size_t	len;
+	char	*tmp;
+	t_env	*etmp;
+	char	*name;
+
+	tmp = arg;
+	while (*tmp != '=')
+		tmp++;
+	len = tmp - arg;
+	etmp = shell->senv->next;
+	while (etmp)
+	{
+		if (ft_strncmp(etmp->str, arg, len) == 0)
+		{
+			name = ft_calloc(len + 1, sizeof(*name));
+			if (!name)
+				exit_free(shell);
+			ft_memcpy(name, etmp->str, len);
+			return (name);
+		}
+		etmp = etmp->next;
+	}
+	return (NULL);
+}
 
 t_env	*new_env(char *data)
 {
