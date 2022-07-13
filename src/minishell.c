@@ -6,41 +6,49 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/09 19:41:27 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 00:35:55 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+int	update_last_exit_status(t_shell *shell)
+{
+	char	*update;
+	t_env	*tmp;
+
+	update = ft_itoa(shell->ret);
+	if (!update)
+		return (0);
+	tmp = get_env_ptr(shell, "?");
+	free(tmp->str);
+	tmp->str = ft_strjoin("?=", update);
+	if (!tmp->str)
+	{
+		free(update);
+		return (0);
+	}
+	free(update);
+	return (1);
+}
+
 int	minishell(t_shell *shell)
 {
 	shell->ret = -1;
 	shell->current = shell->start;
-	// ft_printf("%s#######################################\n", CYAN);
-	// ft_printf("                 PARSER                  \n");
-	// ft_printf("#######################################%s\n", RESET);
 	while (parser(shell) == T_PIPE && shell->ret == 0)
 		continue;
-	// ft_dprintf(shell->fd_stdout, "errno after parser = %d\n", errno);
+	// print_list(shell);
 	if (shell->ret == 0)
 		shell->ret = lexer(shell);
 	if (shell->ret > 0)
 		print_error(shell);
-	// ft_dprintf(shell->fd_stdout, "errno after lexer= %d\n", errno);
 	update_history(shell, shell->history);
 	// print_list(shell);
-	// ft_dprintf(shell->fd_stdout, "errno update history = %d\n", errno);
-
-	// !shell->ret ? ft_printf("%s############# EXECUTE LIST ############%s\n", MAG, RESET):-1;
 	if (shell->ret == 0)
-		shell->ret = executor(shell);
-	// ft_printf("coucou pid %d\n", getpid());
-	if (shell->ret > 0)
-		print_error(shell);
-	// ft_printf("coucou pid %d\n", getpid());
+		shell->ret = executor(shell, NULL);
 	clear_parsing(shell);
-	// waitpid(0, &shell->ret, 0);
-	// shell->ret = WEXITSTATUS(shell->ret);
 	// ft_printf("%s######### MINISHELL ret = %2d ##########%s\n", CYAN, shell->ret, RESET);
+	update_last_exit_status(shell);
 	return (shell->ret);
 }

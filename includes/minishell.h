@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/10 23:56:05 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 01:18:49 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,10 +169,10 @@ char		*expand_key(t_shell *shell, char *key);
 int			append_backslash(char **env);
 t_list		*find_nextflag(t_shell *shell);
 void		merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag);
-int			file_check(t_shell *shell);
-char		**build_pathtab(char *paths, char *key);
+// int			file_check(t_shell *shell);
+char		**build_pathtab(t_shell *shell, char *key);
 int			search_relbin(t_shell *shell, t_token *token);
-int			search_absbin(t_shell *shell, t_token *token);
+int			search_bin_path(t_shell *shell, t_token *token);
 int			search_command(t_shell *shell);
 int			lexer(t_shell *shell);
 /*
@@ -181,7 +181,7 @@ int			lexer(t_shell *shell);
 
 int			exec_bin(t_shell *shell, char **tab);
 char		**get_cmd_tab(t_shell *shell);
-int			executor(t_shell *shell);
+int			executor(t_shell *shell, char **tab);
 /*
 ** is_check.c
 */
@@ -200,7 +200,7 @@ int			is_start(char *line, int i);
 ** print.c
 */
 void		print_list(t_shell *shell);
-int			print_errno(t_shell *shell);
+int			print_errno(char *object, int ret);
 int			print_error(t_shell *shell);
 /*
 ** history.c

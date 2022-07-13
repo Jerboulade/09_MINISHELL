@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/11 00:22:22 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 00:34:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,20 +201,18 @@ t_shell	*init_shell(char **env)
 	// ft_printf("%s################# ENV LIST #################\n", MAG);
 	// t_env *tmp = shell->senv;
 	// int i = 0;
+	// ft_printf("first = %s\n", tmp->str);
 	// while (tmp)
 	// {
 	// 	ft_printf("[%02d]%s\n", i++, tmp->str);
 	// 	tmp = tmp->next;
 	// }
-	// ft_printf("%s\n", RESET);
-
+	// ft_printf("%s", RESET);
 	shell->history = init_history(shell);
 	if (!shell->history)
 		exit_free(shell);
 	shell->parent = 1;
-	// shell->end = 0;
 	shell->fd_stdin = dup(STDIN_FILENO);
 	shell->fd_stdout = dup(STDOUT_FILENO);
-	// shell->fd_heredoc = -1;
 	return (shell);
 }

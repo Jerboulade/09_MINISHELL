@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/10 23:59:34 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 00:29:08 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,11 @@ void	clear_parsing(t_shell *shell)
 	if (shell->start && shell->start->next)
 		ft_lstclear(&shell->start->next, &free_token);
 	free_heredoc(shell);
+	if (dup2(shell->fd_stdin, STDIN_FILENO) == -1)
+		shell->ret = print_errno("reset stdin failed", 1);
+	if (dup2(shell->fd_stdout, STDOUT_FILENO) == -1)
+		shell->ret = print_errno("reset stdout failed", 1);
+	shell->end = 0;
 	// ft_printf("\nIN CLEAR PARSING start->next = %p\n", shell->start->next);
 }
 
@@ -114,6 +119,7 @@ void	free_history(t_hist *history)
 	if (history->path)
 		free(history->path);
 	free(history);
+	rl_clear_history();
 }
 
 void	free_shell(t_shell *shell)

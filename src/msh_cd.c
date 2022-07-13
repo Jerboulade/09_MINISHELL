@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 22:16:04 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/11 01:26:47 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 02:41:00 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,21 +55,21 @@ int	update_directory_path(t_shell *shell, char *name)
 
 int	go_home(t_shell *shell)
 {
-	int		ret;
 	char	*path;
 
 	path = get_env(shell, "HOME");
 	if (!path)
 	{
-		ft_dprintf(STDERR_FILENO, "minishell : cd : HOME not set\n");
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
+		ft_dprintf(STDERR_FILENO, "cd: HOME not set\n");
 		return (1);
 	}
 	if (update_directory_path(shell, "OLDPWD"))
 		return (1);
-	ret = chdir(path);
-	if (ret != 0)
+	if (chdir(path) == -1)
 	{
-		perror("minishell: cd : ");
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s cd: %s: ", RED, RESET, path);
+		perror("");
 		return (1);
 	}
 	if (update_directory_path(shell, "PWD"))
@@ -79,7 +79,6 @@ int	go_home(t_shell *shell)
 
 int	go_dir(t_shell *shell, char *path)
 {
-	int		ret;
 	char	*tmp;
 
 	tmp = NULL;
@@ -94,10 +93,10 @@ int	go_dir(t_shell *shell, char *path)
 		path = tmp;
 	}
 	update_directory_path(shell, "OLDPWD");
-	ret = chdir(path);
-	if (ret == -1)
+	if (chdir(path) == -1)
 	{
-		perror("minishell : cd ");
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s cd: %s: ", RED, RESET, path);
+		perror("");
 		return (1);
 	}
 	update_directory_path(shell, "PWD");
@@ -108,23 +107,17 @@ int	go_dir(t_shell *shell, char *path)
 
 int	msh_cd(t_shell *shell, char **av)
 {
-	// int	ret;
-
-	// ret = 0;
 	if (!av || !av[0] || !av[0][0])
 		return (1);
 	if (!av[1] && go_home(shell))
-	// 	ret = go_home(shell);
-	// if (ret)
 		return (1);
 	if (av[1] && av[1][0] == '-' && av[1][1])
 	{
-		ft_dprintf(STDERR_FILENO, "minishell : ");
-		ft_dprintf(STDERR_FILENO, "cd : '%s' not a valid option\n", av[1]);
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
+		ft_dprintf(STDERR_FILENO, "cd: '%s' not a valid option\n", av[1]);
 		return (1);
 	}
 	if (av[1] && go_dir(shell, av[1]))
-		// ret = go_dir(shell, av[1]);
 		return (1);
 	return (0);
 }

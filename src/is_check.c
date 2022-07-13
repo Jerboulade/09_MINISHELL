@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 01:12:40 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/06 23:15:43 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/12 14:13:01 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,6 @@ int	is_meta(t_symbol symbol)
 			|| symbol == T_REDIRIN \
 			|| symbol == T_HEREDOC \
 			|| symbol == T_PIPE);
-}
-
-int	is_relbin(char *key)
-{
-	struct stat	info;
-
-	if (stat(key, &info) == 0 && (info.st_mode & S_IFMT) != S_IFDIR)
-	{
-		// ft_printf("%s is (S_KEY = %d)\n", key, info.st_mode & S_IFMT);
-		// ft_printf("S_IFDIR = %d\nS_IFREG = %d\nS_IFCHR = %d\nS_IFBLK = %d\nS_IFLNK = %d\nS_IFIFO = %d\nS_IFSOCK = %d\n", S_IFDIR, S_IFREG, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK);
-		return (1);
-	}
-	return (0);
 }
 
 int		is_builtin(char *key)

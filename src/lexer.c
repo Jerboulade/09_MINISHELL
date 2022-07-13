@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/23 21:01:48 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/06 23:13:35 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 01:42:37 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,50 +74,54 @@ void	merge_and_move(t_shell *shell, t_list *tmp_prev, int moveflag)
 	}
 }
 
-int	file_check(t_shell *shell)
-{
-	// int fd;
-	// t_symbol symbol;
-	//
-	shell->current = shell->start;
-	// while (shell->current)
-	// {
-	// 	symbol = pop_symbol(shell->current);
-	// 	if (symbol == T_REDIRIN)
-	// 	{
-	// 		fd = open(pop_key(shell->current), O_RDONLY, 0666);
-	// 		if (fd == -1) //&& errno)
-	// 			return (errno);
-	// 		close(fd);
-	// 	}
-	// 	else if (symbol == T_REDIROUT)
-	// 	{
-	// 		fd = open(pop_key(shell->current), O_RDONLY, 0666);
-	// 		if (fd == -1) //&& errno)
-	// 			return (errno);
-	// 		close(fd);
-	// 	}
-	// 	shell->current = shell->current->next;
-	// }
-	return (0);
-}
-char	**build_pathtab(char *paths, char *key)
+// int	file_check(t_shell *shell)
+// {
+// 	// int fd;
+// 	// t_symbol symbol;
+// 	//
+// 	shell->current = shell->start;
+// 	// while (shell->current)
+// 	// {
+// 	// 	symbol = pop_symbol(shell->current);
+// 	// 	if (symbol == T_REDIRIN)
+// 	// 	{
+// 	// 		fd = open(pop_key(shell->current), O_RDONLY, 0666);
+// 	// 		if (fd == -1) //&& errno)
+// 	// 			return (errno);
+// 	// 		close(fd);
+// 	// 	}
+// 	// 	else if (symbol == T_REDIROUT)
+// 	// 	{
+// 	// 		fd = open(pop_key(shell->current), O_RDONLY, 0666);
+// 	// 		if (fd == -1) //&& errno)
+// 	// 			return (errno);
+// 	// 		close(fd);
+// 	// 	}
+// 	// 	shell->current = shell->current->next;
+// 	// }
+// 	return (0);
+// }
+char	**build_pathtab(t_shell *shell, char *key)
 {
 	int		i;
 	char	*tmp;
 	char	**path_tab;
+	char	*paths;
 
+	paths = get_env(shell, "PATH");
+	if (!paths)
+		return (NULL);
 	path_tab = ft_split(paths, ':');
 	if (!path_tab)
-		return (NULL);
+		exit_free(shell);
 	if (!append_backslash(path_tab))
-		return (NULL);
+		exit_free(shell);
 	i = -1;
 	while (path_tab[++i])
 	{
 		tmp = ft_strjoin(path_tab[i], key);
 		if (!tmp)
-			return (NULL);
+			exit_free(shell);
 		free(path_tab[i]);
 		path_tab[i] = tmp;
 	}
@@ -129,36 +133,67 @@ char	**build_pathtab(char *paths, char *key)
 	return (path_tab);
 }
 
-
-
-int	search_absbin(t_shell *shell, t_token *token)
+int	check_bin_path(char *path)
 {
-	int			i;
-	char		**path_tab;
+	int			stat_ret;
 	struct stat	info;
 
-	path_tab = build_pathtab(get_env(shell, "PATH"), token->key);
-	if (!path_tab)
+	stat_ret = stat(path, &info);
+	if (stat_ret != 0) //not found
+		return (127);
+	if (stat_ret == 0 && (info.st_mode & S_IFMT) == S_IFDIR)
+		return (126);
+	return (0);
+}
+
+void	update_bin_path(t_shell *shell, t_token *token, char *path)
+{
+	free(token->key);
+	token->key = ft_strdup(path);
+	if (!token->key)
 		exit_free(shell);
+}
+
+int	search_bin_path(t_shell *shell, t_token *token)
+{
+	int			i;
+	int			ret;
+	char		**path_tab;
+
+	if (!token->key[0])
+	 	return (127);
+	ret = check_bin_path(token->key);
+	if (!ret || ft_strchr(token->key, '/'))
+		return (ret);
+	path_tab = build_pathtab(shell, token->key);
+	if (!path_tab)
+		return (127);
 	i = -1;
 	while (path_tab[++i])
 	{
-		// ft_printf("%s[%02d]_search_absbin %s%s\n", MAG, i, path_tab[i], RESET);
-		if (stat(path_tab[i], &info) == 0 && (info.st_mode & S_IFMT) != S_IFDIR)
+		ret = check_bin_path(path_tab[i]);
+		if (!ret || ret == 126)
 		{
-			free(token->key);
-			token->key = ft_strdup(path_tab[i]);
-			free_tab(path_tab);
-			return (0);
-		}
-		else if ((info.st_mode & S_IFMT) == S_IFDIR)
-		{
-			free_tab(path_tab);
-			return (6);
+			if (!ret)
+				update_bin_path(shell, token, path_tab[i]);
+			break;
 		}
 	}
 	free_tab(path_tab);
-	return (7);
+	return (ret);
+}
+
+int	is_relbin(char *key)
+{
+	struct stat	info;
+
+	if (stat(key, &info) == 0 && (info.st_mode & S_IFMT) != S_IFDIR)
+	{
+		// ft_printf("%s is (S_KEY = %d)\n", key, info.st_mode & S_IFMT);
+		// ft_printf("S_IFDIR = %d\nS_IFREG = %d\nS_IFCHR = %d\nS_IFBLK = %d\nS_IFLNK = %d\nS_IFIFO = %d\nS_IFSOCK = %d\n", S_IFDIR, S_IFREG, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK);
+		return (1);
+	}
+	return (0);
 }
 
 int	search_command(t_shell *shell)
@@ -167,16 +202,11 @@ int	search_command(t_shell *shell)
 
 	if (is_builtin(pop_key(shell->current)))
 		pop_token(shell->current)->symbol = T_BUILTIN;
-	else if (is_relbin(pop_key(shell->current)))
-		pop_token(shell->current)->symbol = T_BIN;
 	else
 	{
-		ret = search_absbin(shell, pop_token(shell->current));
+		ret = search_bin_path(shell, pop_token(shell->current));
 		if (ret)
-		{
-			errno = 0;
 			return (ret);
-		}
 		pop_token(shell->current)->symbol = T_BIN;
 	}
 	return (0);
@@ -211,5 +241,5 @@ int	lexer(t_shell *shell)
 		tmp_prev = shell->current;
 		shell->current = shell->current->next;
 	}
-	return (file_check(shell));
+	return (0);
 }

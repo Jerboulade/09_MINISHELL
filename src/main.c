@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/10 18:45:56 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 02:53:23 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void head(char **env)
 	while (minishell(shell) > -1)
 		continue;
 	free_shell(shell);
-	int fd = open("./filetestfd", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	ft_printf("%d\n", fd);
-	close(fd);
+	// int fd = open("./filetestfd", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	// ft_printf("%d\n", fd);
+	// close(fd);
 }
 
 int	main(int ac, char **av, char **env)

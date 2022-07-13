@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 17:22:23 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/11 00:22:55 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/11 22:07:00 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,11 @@ int	proceed_unsetting(t_shell *shell, char **av)
 		// ft_dprintf(shell->fd_stdout, "arg = '%s'\n", av[i]);
 		ret = check_arg_format(av[i]);
 		// ft_dprintf(shell->fd_stdout, "arg = '%s'\n", av[i]);
-		if (ret < 2 && ++exit_status)
+		if (ret < 2)
+		{
 			ft_dprintf(shell->fd_stdout, "minishell: unset: '%s' : not a valid indentifier\n", av[i]);
+			exit_status++;
+		}
 		else
 			remove_node(shell, av[i]);
 	}

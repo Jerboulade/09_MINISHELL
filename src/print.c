@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/05 18:06:18 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/13 02:23:39 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,11 @@ void	print_list(t_shell *shell)
 	ft_printf("%s#######################################%s\n", ORANGE, RESET);
 }
 
-int	print_errno(t_shell *shell)
+int	print_errno(char *object, int ret)
 {
-	ft_printf("%sminishell[errno:%d]:%s ", RED, errno, RESET);
-	if (shell->current)
-		ft_printf("\'%s\' : ", pop_key(shell->current));
+	ft_dprintf(STDERR_FILENO, "%sminishell:%s %s: ", RED, RESET, object);
 	perror("");
-	return (errno);
+	return (ret);
 }
 
 int	print_error(t_shell *shell)
@@ -75,17 +73,17 @@ int	print_error(t_shell *shell)
 	int	j;
 
 	// ft_printf("\nIN PERROR PARSING\n");
-	if (errno)
-		return (print_errno(shell));
+	// if (errno)
+	// 	print_errno(shell);
 	i = pop_index(shell->current);
 	j = -1;
-	ft_printf("%sminishell[%d]:%s ", RED, shell->ret, RESET);
-	if (shell->ret > 0 && shell->ret < 6)
+	ft_printf("%sminishell:%s ", RED, RESET);
+	if (shell->ret < 6)
 		ft_printf("syntax error\n");
-	else if (shell->ret == 6)
-		ft_printf("\'%s\' : is a directory\n", pop_key(shell->current));
-	else if (shell->ret == 7)
-		ft_printf("\'%s\' : command not found\n", pop_key(shell->current));
+	else if (shell->ret == 126)
+		ft_printf("%s: is a directory\n", pop_key(shell->current));
+	else if (shell->ret == 127)
+		ft_printf("%s: command not found\n", pop_key(shell->current));
 	else
 	{
 		ft_printf("%s%s\n", shell->line, GREEN);
