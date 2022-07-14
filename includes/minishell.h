@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 03:26:14 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 19:59:54 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,19 +91,20 @@ typedef struct s_hist
 
 typedef struct s_shell
 {
+	char			*line;
 	t_list			*start;
 	t_list			*current;
-	char			*line;
 	t_env			*senv;
 	t_hdoc			*heredoc;
-	int				ret;
-	int				parent;
-	int				end;
+	t_hist			*history;
+	char			piped;
+	char			parent;
 	int				fd_stdin;
 	int				fd_stdout;
-	// int				fd_heredoc[2];
-	t_hist			*history;
+	int				end;
+	int				exit;
 	int				fd_redirect;
+	int				ret;
 }					t_shell;
 /*
 ** init.c
@@ -235,6 +236,7 @@ int			msh_unset(t_shell *shell, char **av);
 int			update_directory_path(t_shell *shell, char *name);
 int			msh_cd(t_shell *shell, char **av);
 void	handle_signal(int signum, siginfo_t *info, void *context);
+int	msh_exit(t_shell *shell, char **av);
 
 t_sig sig;
 

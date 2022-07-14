@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:20:40 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 02:46:34 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 21:50:59 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,31 @@ char	**env_listoar(t_shell *shell)
 	return (env_array);
 }
 
+void	update_last_command(t_shell *shell, char *cmd)
+{
+	char	*tmp;
+	t_env	*update;
+
+	update = get_env_ptr(shell, "_");
+	tmp = ft_strjoin("_=", cmd);
+	if (!tmp)
+		exit_free(shell);
+	if (update)
+	{
+		if (update->str)
+			free(update->str);
+		update->str = tmp;
+	}
+	else
+	{
+		update = new_env(tmp);
+		if (!update)
+			exit_free(shell);
+		add_env(shell, update);
+		free(tmp);
+	}
+}
+
 char	**get_cmd_tab(t_shell *shell)
 {
 	int		i;
@@ -66,6 +91,7 @@ char	**get_cmd_tab(t_shell *shell)
 		tab[i] = pop_key(tmp);
 		tmp = tmp->next;
 	}
+	update_last_command(shell, tab[0]);
 	return (tab);
 }
 
@@ -86,6 +112,8 @@ int	exec_builtin(t_shell *shell, char **tab)
 		ret = msh_unset(shell, tab);
 	else if (ft_strequ("cd", tab[0]))
 		ret = msh_cd(shell, tab);
+	else if (ft_strequ("exit", tab[0]))
+		ret = msh_exit(shell, tab);
 	if (ret)
 		return (2);
 	return (0);
@@ -93,10 +121,8 @@ int	exec_builtin(t_shell *shell, char **tab)
 
 int	exec_bin(t_shell *shell, char **tab)
 {
-	pid_t	pid;
 	char	**env_array;
 
-	pid = 0;
 	if (shell->parent)
 		sig.pid = fork();
 	if (sig.pid == -1)
@@ -105,7 +131,6 @@ int	exec_bin(t_shell *shell, char **tab)
 	{
 		env_array = env_listoar(shell);
 		execve(*tab, tab, env_array);
-		// ft_printf("%s\n", "child");
 		print_errno(*tab, 126);
 		free(env_array);
 		free_shell(shell);
@@ -114,12 +139,12 @@ int	exec_bin(t_shell *shell, char **tab)
 	else
 	{
 		waitpid(sig.pid, &shell->ret, 0);
-		if (shell->ret)
+		if (shell->ret >= 256)
 			shell->ret /= 256;
+		if (sig.signal == 131)
+			ft_printf("Quit: %d\n", sig.signal - 128);
 		if (sig.signal)
 			shell->ret = sig.signal;
-		if (sig.signal == 131)
-			ft_printf("Quit: 3\n");
 	}
 	return (shell->ret);
 }
@@ -131,8 +156,7 @@ void	pipe_process(t_shell *shell, int fd[2], pid_t pid)
 		// ft_dprintf(shell->fd_stdout, "%sPIPE created [child]\n", GREEN);
 		shell->parent = 0;
 		// ft_dprintf(shell->fd_stdout, "PIPE_FDs [0] = %d, [1] = %d\n", fd[0], fd[1]);
-		if (dup2(fd[1], STDOUT_FILENO) == -1)
-			shell->ret = print_errno("dup2", 1);
+		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
 		// ft_dprintf(shell->fd_stdout, "DUP RET child = %d\n", ret);
@@ -146,8 +170,7 @@ void	pipe_process(t_shell *shell, int fd[2], pid_t pid)
 			shell->ret /= 256;
 		// ft_dprintf(shell->fd_stdout, "%s", RESET);
 		// ft_dprintf(shell->fd_stdout, "ret after pid in PIPE = %d\n", shell->ret);
-		if (dup2(fd[0], STDIN_FILENO) == -1)
-			shell->ret = print_errno("dup2", 1);
+		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		close(fd[1]);
 		// ft_dprintf(shell->fd_stdout, "DUP RET parent = %d\n", ret);
@@ -210,8 +233,7 @@ void redir_in(t_shell *shell, t_symbol symbol)
 	else
 	{
 		// ft_dprintf(shell->fd_stdout, " REDIR IN << [ %s ] for %s\n", pop_key(shell->current), shell->parent? "[parent]" : "[child]");
-		if (dup2(shell->heredoc->fd, STDIN_FILENO) == -1)
-			shell->ret = print_errno("heredoc", 1);
+		dup2(shell->heredoc->fd, STDIN_FILENO);
 		close(shell->heredoc->fd);
 		tmp = shell->heredoc;
 		shell->heredoc = shell->heredoc->next;
@@ -296,11 +318,8 @@ void	execute(t_shell *shell, t_symbol exec_type, char **tab, int fdin_pipe)
 	else
 	{
 		shell->ret = exec_builtin(shell, tab);
-		// ft_dprintf(shell->fd_stdout, "%s who's executed builtin now listen from [%d]\n", shell->parent? "[parent]" : "[child]", fd[0]);
-		if (dup2(fdin_pipe, STDIN_FILENO) == -1)
-			shell->ret = print_errno("1dup2", 1);
-		if (dup2(shell->fd_stdout, STDOUT_FILENO) == -1)
-			shell->ret = print_errno("2dup2", 1);
+		dup2(fdin_pipe, STDIN_FILENO);
+		dup2(shell->fd_stdout, STDOUT_FILENO);
 		close(fdin_pipe);
 		shell->end = 0;
 	}

@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:51:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 16:40:49 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 20:01:32 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,10 @@ size_t	 meta_token(t_shell *shell, int i)
 	// ft_printf("\nIN META TOKEN\n");
 	size = 1;
 	if (shell->line[i] == '|')
+	{
 		token.symbol = T_PIPE;
+		shell->piped = 1;
+	}
 	else if (shell->line[i] == '>' && shell->line[i + 1] != '>')
 		token.symbol = T_REDIROUT;
 	else if (shell->line[i] == '>' && shell->line[i + 1] == '>' && ++size)

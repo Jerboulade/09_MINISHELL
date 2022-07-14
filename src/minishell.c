@@ -6,30 +6,29 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 16:37:14 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 21:37:48 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	update_last_exit_status(t_shell *shell)
+void	update_last_exit_status(t_shell *shell)
 {
 	char	*update;
 	t_env	*tmp;
 
 	update = ft_itoa(shell->ret);
 	if (!update)
-		return (0);
+		exit_free(shell);
 	tmp = get_env_ptr(shell, "?");
 	free(tmp->str);
 	tmp->str = ft_strjoin("?=", update);
 	if (!tmp->str)
 	{
 		free(update);
-		return (0);
+		exit_free(shell);
 	}
 	free(update);
-	return (1);
 }
 
 int	minishell(t_shell *shell)

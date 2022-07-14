@@ -6,13 +6,13 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 16:37:27 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 19:41:13 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void head(char **env)
+int head(char **env)
 {
 	t_shell	*shell;
 	struct sigaction	sa_params;
@@ -24,9 +24,14 @@ void head(char **env)
 	sigaction(SIGQUIT, &sa_params, NULL);
 	rl_catch_signals = 0;
 	shell = init_shell(env);
-	while (minishell(shell) > -1)
+	while (minishell(shell) > -1 && !shell->exit)
 		continue;
 	free_shell(shell);
+	if (shell->exit == -1)
+		shell->ret = 0;
+	else if (shell->exit)
+		shell->ret = shell->exit;
+	return (shell->ret);
 	// int fd = open("./filetestfd", O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	// ft_printf("%d\n", fd);
 	// close(fd);
@@ -39,7 +44,7 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	// env;
-	head(env);
+	int ret = head(env);
 	// ########## TEST : MULTI PROCESS ##########
 	// pid_t pid;
 	// const char *whoami = "parent";
@@ -69,5 +74,5 @@ int	main(int ac, char **av, char **env)
 	// ########## CHECK LEAKS ##########
 	// system("leaks minishell");
 	// while (1);
-	return (0);
+	return (ret);
 }
