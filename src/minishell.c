@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:39 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/13 00:35:55 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 16:37:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,15 @@ int	minishell(t_shell *shell)
 {
 	shell->ret = -1;
 	shell->current = shell->start;
+	sig.pid = 0;
+	sig.signal = 0;
 	while (parser(shell) == T_PIPE && shell->ret == 0)
 		continue;
-	// print_list(shell);
+	if (sig.signal == 130)
+		shell->ret = 1;
 	if (shell->ret == 0)
 		shell->ret = lexer(shell);
-	if (shell->ret > 0)
+	if (shell->ret > 0 && sig.signal != 130)
 		print_error(shell);
 	update_history(shell, shell->history);
 	// print_list(shell);

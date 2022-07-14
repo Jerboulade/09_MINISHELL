@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:31 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/13 01:18:49 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 03:26:14 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <readline/history.h>
 # include <sys/param.h>
 # include <sys/stat.h>
+# include <signal.h>
 
 # define CYAN "\001\033[1;36m\002"
 # define GREEN "\001\033[1;32m\002"
@@ -34,7 +35,6 @@
 typedef enum e_symbol
 {
 	T_START,
-	T_EMPTY,
 	T_WORD,
 	T_PIPE,
 	T_NEWLINE,
@@ -44,7 +44,6 @@ typedef enum e_symbol
 	T_APPEND,
 	T_BIN,
 	T_BUILTIN,
-	T_FILE
 }			t_symbol;
 /*
 ** struct s_list prototype from libft
@@ -61,6 +60,13 @@ typedef struct s_env
 	struct s_env	*next;
 	struct s_env	*prev;
 }					t_env;
+
+typedef struct s_sig
+{
+	int			pid;
+	int			sub;
+	int			signal;
+}					t_sig;
 
 typedef struct s_hdoc
 {
@@ -228,5 +234,8 @@ int			msh_export(t_shell *shell, char **av);
 int			msh_unset(t_shell *shell, char **av);
 int			update_directory_path(t_shell *shell, char *name);
 int			msh_cd(t_shell *shell, char **av);
+void	handle_signal(int signum, siginfo_t *info, void *context);
+
+t_sig sig;
 
 #endif

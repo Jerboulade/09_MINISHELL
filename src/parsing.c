@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:36 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/13 01:50:35 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 17:00:11 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,25 +114,51 @@ char	*display_prompt(int i, int j, char *tmp, t_shell *shell)
 	return (prompt);
 }
 
+void	handle_signal(int signum, siginfo_t *info, void *context)
+{
+	(void)context;
+	(void)info;
+	if (signum == SIGINT)
+	{
+		if (!sig.pid)
+			close(STDIN_FILENO);
+		else
+		{
+			waitpid(0, NULL, 0);
+			rl_redisplay();
+		}
+		sig.signal = 130;
+	}
+	else if (signum == SIGQUIT)
+	{
+		if (!sig.pid)
+			rl_redisplay();
+		else
+			waitpid(0, NULL, 0);
+		sig.signal = 131;
+	}
+}
+
 t_symbol parser(t_shell *shell)
 {
 	char *newline;
 
-	// waitpid(-1, &shell->ret, 0);
-	// shell->ret = WEXITSTATUS(shell->ret);
-	// ft_printf("#######################################\n");
 	if (!shell->line)
 		shell->line = readline(display_prompt(0, 0, NULL, shell));
 	else
 	{
+		// sig.sub = 1;
 		newline = readline("pipe> ");
+		// printf( "coucou2-%d", sig.pid);
 		if (!newline)
 			return (-1);
 		else if (is_empty(newline))
 		{
+			// printf( "coucou3-%d", sig.pid);
 			free(newline);
 			return (T_PIPE);
 		}
+		// ft_printf("is not empty, [%s]\n", newline);
 		join_newline(shell, newline);
 	}
 	// ft_printf("#######################################\n");

@@ -6,11 +6,34 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/13 02:23:39 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 03:26:03 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char	*print_symbol(t_symbol symbol)
+{
+	if (symbol == T_BIN)
+		return ("T_BIN");
+	else if (symbol == T_BUILTIN)
+		return ("T_BUILTIN");
+	else if (symbol == T_NEWLINE)
+		return ("T_NEWLINE");
+	else if (symbol == T_PIPE)
+		return ("T_PIPE");
+	else if (symbol == T_REDIRIN)
+		return ("T_REDIRIN");
+	else if (symbol == T_REDIROUT)
+		return ("T_REDIROUT");
+	else if (symbol == T_APPEND)
+		return ("T_APPEND");
+	else if (symbol == T_HEREDOC)
+		return ("T_HEREDOC");
+	else if (symbol == T_WORD)
+		return ("T_WORD");
+	return ("T_START");
+}
 
 void	print_list(t_shell *shell)
 {
@@ -28,32 +51,7 @@ void	print_list(t_shell *shell)
 		token = (t_token *)tmp->data;
 		ft_printf("%s<%s%03d%s|%s", ORANGE, RESET, token->pos, ORANGE, RESET);
 		ft_printf("%-20.20s*%s|%s", token->key, ORANGE, RESET);
-		if (token->symbol == T_BIN)
-			symbol = "T_BIN";
-		else if (token->symbol == T_BUILTIN)
-			symbol = "T_BUILTIN";
-		else if (token->symbol == T_NEWLINE)
-			symbol = "T_NEWLINE";
-		else if (token->symbol == T_PIPE)
-			symbol = "T_PIPE";
-		else if (token->symbol == T_REDIRIN)
-			symbol = "T_REDIRIN";
-		else if (token->symbol == T_REDIROUT)
-			symbol = "T_REDIROUT";
-		// else if (token->symbol == T_REDIRECT)
-		// 	symbol = "T_REDIRECT";
-		else if (token->symbol == T_APPEND)
-			symbol = "T_APPEND";
-		else if (token->symbol == T_HEREDOC)
-			symbol = "T_HEREDOC";
-		else if (token->symbol == T_FILE)
-			symbol = "T_FILE";
-		else if (token->symbol == T_START)
-			symbol = "T_START";
-		else if (token->symbol == T_WORD)
-			symbol = "T_WORD";
-		else if (token->symbol == T_EMPTY)
-			symbol = "T_EMPTY";
+		symbol = print_symbol(token->symbol);
 		ft_printf("%-11s%s> %s%d\n", symbol, ORANGE, RESET, token->index);
 		tmp = tmp->next;
 	}

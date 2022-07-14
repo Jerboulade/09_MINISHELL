@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/03 18:20:40 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/13 02:16:36 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 02:46:34 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,13 +98,14 @@ int	exec_bin(t_shell *shell, char **tab)
 
 	pid = 0;
 	if (shell->parent)
-		pid = fork();
-	if (pid == -1)
+		sig.pid = fork();
+	if (sig.pid == -1)
 		return (print_errno("fork", 1));
-	if (pid == 0)
+	if (sig.pid == 0)
 	{
 		env_array = env_listoar(shell);
 		execve(*tab, tab, env_array);
+		// ft_printf("%s\n", "child");
 		print_errno(*tab, 126);
 		free(env_array);
 		free_shell(shell);
@@ -112,9 +113,13 @@ int	exec_bin(t_shell *shell, char **tab)
 	}
 	else
 	{
-		waitpid(pid, &shell->ret, 0);
+		waitpid(sig.pid, &shell->ret, 0);
 		if (shell->ret)
 			shell->ret /= 256;
+		if (sig.signal)
+			shell->ret = sig.signal;
+		if (sig.signal == 131)
+			ft_printf("Quit: 3\n");
 	}
 	return (shell->ret);
 }

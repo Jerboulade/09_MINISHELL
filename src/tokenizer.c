@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:51:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/07 21:06:56 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 16:40:49 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ int	handle_heredoc(t_shell *shell, char *key)
 			tmp = tmp->next;
 		tmp->next = heredoc;
 	}
+	if (sig.signal == 130)
+		return (1);
 	return (0);
 }
 
@@ -96,19 +98,15 @@ int	tokenizer(t_shell *shell, char *key, int i)
 {
 	t_token	token;
 
-	// ft_printf("\nIN TOKENIZER\n");
 	if (!key)
 		exit_free(shell);
-	// if (is_expandable(key))
-	// {
-		// remove_quote(key);
 	key = expand_key(shell, key);
-	// }
-	// else
-		// remove_quote(key);
 	token.symbol = T_WORD;
 	if (pop_symbol(shell->current) == T_HEREDOC && !pop_key(shell->current))
-		handle_heredoc(shell, key);
+	{
+		if (handle_heredoc(shell, key))
+			return (1);
+	}
 	token.key = key;
 	token.index = i;
 	token.pos = set_token_pos(shell, &token);
