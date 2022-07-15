@@ -6,7 +6,7 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/07/15 04:28:06 by jcarere          ###   ########.fr        #
+#    Updated: 2022/07/15 12:26:16 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,23 +17,37 @@ RLINCL = -I/usr/local/Cellar/readline/8.1.2/include
 RLLIB = -L/usr/local/Cellar/readline/8.1.2/lib -lreadline
 SRCDIR = ./src/
 OBJDIR = ./obj/
-DATADIR = ./datafile/
+MVOBJ =
+DATADIR = ./data/
 HISTORYFILE = $(DATADIR)history.log
 INCL = ./includes/
 LIBDIR = ./libft/
 LIB = $(LIBDIR)libft.a
-SRC =	main.c minishell.c init.c \
-		env_update.c env_utils.c env_utils2.c \
-		parsing.c parsing_utils.c \
-		tokenizer.c token_pop.c token_utils.c \
-		expand.c expand_utils.c \
-		lexer.c lexer_path_utils.c \
-		executor.c handle_pipe.c handle_redir.c \
-		msh_cd.c msh_echo.c msh_env.c msh_exit.c msh_export.c msh_pwd.c msh_unset.c \
- 		history.c \
-		is_check.c is_check2.c is_check3.c print.c \
-		free.c free_utils.c
-OBJ = $(addprefix $(OBJDIR), $(SRC:%.c=%.o))
+MAIN_DIR = ./src/main/
+ENV_DIR = ./src/env/
+PARS_DIR = ./src/parsing/parser/
+TOK_DIR = ./src/parsing/token/
+EXP_DIR = ./src/parsing/expansion/
+LEX_DIR = ./src/parsing/lexer/
+EXEC_DIR = ./src/exec/
+BTIN_DIR = ./src/builtin/
+HIST_DIR = ./src/history/
+TOOL_DIR = ./src/tool/
+FREE_DIR = ./src/free/
+SRC =	$(MAIN_DIR)main.c $(MAIN_DIR)minishell.c $(MAIN_DIR)init.c \
+		$(ENV_DIR)env_update.c $(ENV_DIR)env_utils.c $(ENV_DIR)env_utils2.c \
+		$(PARS_DIR)parsing.c $(PARS_DIR)parsing_utils.c \
+		$(TOK_DIR)tokenizer.c $(TOK_DIR)token_pop.c $(TOK_DIR)token_utils.c \
+		$(EXP_DIR)expand.c $(EXP_DIR)expand_utils.c \
+		$(LEX_DIR)lexer.c $(LEX_DIR)lexer_path_utils.c \
+		$(EXEC_DIR)executor.c $(EXEC_DIR)handle_pipe.c $(EXEC_DIR)handle_redir.c \
+		$(BTIN_DIR)msh_cd.c $(BTIN_DIR)msh_echo.c $(BTIN_DIR)msh_env.c \
+		$(BTIN_DIR)msh_exit.c $(BTIN_DIR)msh_export.c $(BTIN_DIR)msh_pwd.c \
+		$(BTIN_DIR)msh_unset.c \
+ 		$(HIST_DIR)history.c \
+		$(TOOL_DIR)is_check.c $(TOOL_DIR)is_check2.c $(TOOL_DIR)is_check3.c $(TOOL_DIR)print.c \
+		$(FREE_DIR)free.c $(FREE_DIR)free_utils.c
+OBJ = $(SRC:%.c=%.o)
 REMOVE = /bin/rm -rf
 C_CYAN = \033[1;96m
 C_GREEN = \033[1;32m
@@ -43,21 +57,18 @@ C_ORANGE = \033[0;33m
 C_RESET = \033[0m
 L_CLEAR = \033[K
 
-$(OBJDIR)%.o: $(SRCDIR)%.c
+%.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INCL) $(RLINCL)
 	@printf "$(C_MAG)Compiling 'minishell':         \
 	$(C_CYAN)[$(C_ORANGE)$<$(C_CYAN)] $(C_RESET) $(L_CLEAR)\r"
 
-$(NAME): $(DATADIR) $(OBJDIR) $(OBJ)
+$(NAME): $(DATADIR) $(OBJ)
 	@printf "$(L_CLEAR)\r"
 	@make -s -C $(LIBDIR)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIB) $(RLLIB)
 	@printf "$(C_CYAN)'minishell': $(C_GREEN)ready             \
 	$(C_CYAN)[$(C_GREEN)✔$(C_CYAN)]$(C_RESET)"
 	@printf "$(L_CLEAR)\n"
-
-$(OBJDIR):
-	@mkdir -p $(OBJDIR)
 
 $(DATADIR):
 	@mkdir -p $(DATADIR)
@@ -71,7 +82,7 @@ clear_history:
 
 clean:
 	@make -C $(LIBDIR) clean
-	@$(REMOVE) $(OBJDIR)
+	@$(REMOVE) $(OBJ)
 	@printf "$(C_CYAN)'minishell': $(C_RED)objects deleted   \
 	$(C_CYAN)[$(C_GREEN)✔$(C_CYAN)]$(C_RESET)\n"
 
