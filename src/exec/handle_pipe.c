@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/14 23:11:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/15 03:02:19 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 14:06:09 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	handle_pipe(t_shell *shell, t_symbol exec_type, char **tab)
 	if (exec_type == T_BIN)
 	{
 		shell->ret = open_pipe(shell);
-		free(tab);
+		(void)tab;
 	}
 	else if (exec_type == T_BUILTIN)
 	{

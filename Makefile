@@ -6,13 +6,13 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/07/15 13:29:41 by jcarere          ###   ########.fr        #
+#    Updated: 2022/07/15 14:06:23 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address
 RLINCL = -I/usr/local/Cellar/readline/8.1.2/include
 RLLIB = -L/usr/local/Cellar/readline/8.1.2/lib -lreadline
 SRCDIR = ./src/

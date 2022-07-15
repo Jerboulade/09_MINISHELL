@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:41 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/15 01:16:13 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 13:54:29 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	clear_parsing(t_shell *shell)
 	dup2(shell->fd_stdin, STDIN_FILENO);
 	dup2(shell->fd_stdout, STDOUT_FILENO);
 	shell->end = 0;
+	shell->piped = 0;
 }
 
 void	free_shell(t_shell *shell)
