@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/15 01:16:01 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 13:31:39 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int	head(char **env)
 {
+	int					ret;
 	t_shell				*shell;
 	struct sigaction	sa_params;
 
@@ -26,12 +27,13 @@ int	head(char **env)
 	shell = init_shell(env);
 	while (minishell(shell) > -1 && !shell->exit)
 		continue ;
-	free_shell(shell);
 	if (shell->exit == -1)
 		shell->ret = 0;
 	else if (shell->exit)
 		shell->ret = shell->exit;
-	return (shell->ret);
+	ret = shell->ret;
+	free_shell(shell);
+	return (ret);
 }
 
 int	main(int ac, char **av, char **env)
