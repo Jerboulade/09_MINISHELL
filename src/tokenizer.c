@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:51:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 20:01:32 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 03:01:32 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	token_add_newline(t_shell *shell)
 {
-	t_token token;
+	t_token	token;
 
 	token.pos = -1;
 	token.key = NULL;
@@ -23,7 +23,7 @@ void	token_add_newline(t_shell *shell)
 	token_push(shell, token);
 }
 
-int		in_heredoc(t_shell *shell, char *key, int fd)
+int	in_heredoc(t_shell *shell, char *key, int fd)
 {
 	char	*line;
 
@@ -38,7 +38,6 @@ int		in_heredoc(t_shell *shell, char *key, int fd)
 	ft_dprintf(fd, "%s\n", line);
 	free(line);
 	return (1);
-
 }
 
 int	handle_heredoc(t_shell *shell, char *key)
@@ -51,7 +50,6 @@ int	handle_heredoc(t_shell *shell, char *key)
 	if (!heredoc)
 		exit_free(shell);
 	pipe(fd);
-	// close(shell->fd_heredoc);
 	while (in_heredoc(shell, key, fd[1]))
 		continue ;
 	close(fd[1]);
@@ -65,17 +63,16 @@ int	handle_heredoc(t_shell *shell, char *key)
 			tmp = tmp->next;
 		tmp->next = heredoc;
 	}
-	if (sig.signal == 130)
+	if (g_sig.signal == 130)
 		return (1);
 	return (0);
 }
 
-size_t	 meta_token(t_shell *shell, int i)
+size_t	meta_token(t_shell *shell, int i)
 {
 	size_t	size;
 	t_token	token;
 
-	// ft_printf("\nIN META TOKEN\n");
 	size = 1;
 	if (shell->line[i] == '|')
 	{

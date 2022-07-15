@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 13:33:03 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/09 19:22:35 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 00:42:31 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,21 +63,22 @@ void	create_value(t_shell *shell, char *arg, char *name, char **av)
 	free(name);
 }
 
-int	proceed_exportation(t_shell *shell, char **av)
+void	proceed_exportation(t_shell *shell, char **av)
 {
 	int		i;
 	int		ret;
 	char	*name;
-	int		exit_status;
 
 	i = 0;
-	exit_status = 0;
 	name = NULL;
 	while (av[++i])
 	{
 		ret = check_arg_format(av[i]);
-		if (!ret && ++exit_status)
-			ft_dprintf(shell->fd_stdout, "minishell: export: '%s' : not a valid indentifier\n", av[i]);
+		if (!ret)
+		{
+			ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
+			ft_dprintf(STDERR_FILENO, "export: too many arguments\n");
+		}
 		else if (ret == 1)
 		{
 			name = dup_env_varname(shell, av[i]);
@@ -87,7 +88,6 @@ int	proceed_exportation(t_shell *shell, char **av)
 				create_value(shell, av[i], name, av);
 		}
 	}
-	return (0);
 }
 
 int	msh_export(t_shell *shell, char **av)
@@ -98,10 +98,10 @@ int	msh_export(t_shell *shell, char **av)
 		return (0);
 	if (av[1][0] == '-')
 	{
-		ft_dprintf(shell->fd_stdout, "minishell: export: '%s' : not a valid option\n", av[1]);
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
+		ft_dprintf(STDERR_FILENO, "export: '%s': not a valid option\n", av[1]);
 		return (1);
 	}
-	if (proceed_exportation(shell, av))
-		return (1);
+	proceed_exportation(shell, av);
 	return (0);
 }

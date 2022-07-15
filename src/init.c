@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:31:59 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/13 00:34:14 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 00:01:48 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,107 +56,6 @@ t_hist	*init_history(t_shell *shell)
 	return (history);
 }
 
-int	update_shlvl(t_shell *shell)
-{
-	int		shlvl;
-	char	*update;
-	t_env	*tmp;
-
-	shlvl = ft_atoi(get_env(shell, "SHLVL")) + 1;
-	update = ft_itoa(shlvl);
-	if (!update)
-		return (0);
-	tmp = get_env_ptr(shell, "SHLVL");
-	free(tmp->str);
-	tmp->str = ft_strjoin("SHLVL=", update);
-	if (!tmp->str)
-	{
-		free(update);
-		return (0);
-	}
-	free(update);
-	return (1);
-}
-
-char	*ft_strreverschr(const char *start, const char *current, char c)
-{
-	while (current > start)
-	{
-		if (*current == (char)c)
-			return ((char *)current);
-		current--;
-	}
-	if (*current == (char)c)
-		return ((char *)current);
-	return (NULL);
-}
-
-void	format_move_current_dir_first(char *path)
-{
-	while (19)
-	{
-		path = ft_strchr(path, '/');
-		if (!path)
-			break;
-		while (ft_strncmp(path, "/./", 3) == 0)
-			ft_strlcpy(path, path + 2, safe_strlen(path + 2) + 1);
-		path++;
-	}
-}
-
-void	format_shell_path(char *path)
-{
-	char	*start;
-	char	*tmp;
-
-	start = path;
-	format_move_current_dir_first(path);
-	while (19)
-	{
-		path = ft_strchr(path, '/');
-		if (!path)
-			break;
-		while (ft_strncmp(path, "/../", 4) == 0)
-		{
-			ft_strlcpy(path, path + 3, safe_strlen(path + 3) + 1);
-			if (path > start)
-				tmp = ft_strreverschr(start, path - 1, '/');
-			if (tmp)
-				ft_strlcpy(tmp, path, safe_strlen(path) + 1);
-			path = tmp;
-			tmp = NULL;
-		}
-		path++;
-	}
-}
-
-int	update_shell_path(t_shell *shell)
-{
-	char	*tmp;
-	t_env	*update;
-
-	update = get_env_ptr(shell, "SHELL");
-	tmp = ft_strjoin("SHELL=", get_env(shell, "_"));
-	format_shell_path(tmp);
-	if (!tmp)
-		return (0);
-	if (update)
-	{
-		if (update->str)
-			free(update->str);
-		update->str = tmp;
-	}
-	else
-	{
-		update = new_env(tmp);
-		if (!update)
-			return (0);
-		add_env(shell, update);
-		free(tmp);
-	}
-	return (1);
-}
-
 t_env	*init_env(t_shell *shell, char **env)
 {
 	int		i;
@@ -190,7 +89,7 @@ t_shell	*init_shell(char **env)
 	if (!token)
 		exit_free(shell);
 	token->symbol = T_START;
-	token->pos = -1; // try set other anywhere else (to spare one line)
+	token->pos = -1;
 	shell->start = ft_lstnew(token);
 	if (!shell->start)
 		exit_free(shell);
@@ -198,16 +97,6 @@ t_shell	*init_shell(char **env)
 	shell->senv = init_env(shell, env);
 	if (!shell->senv)
 		exit_free(shell);
-	// ft_printf("%s################# ENV LIST #################\n", MAG);
-	// t_env *tmp = shell->senv;
-	// int i = 0;
-	// ft_printf("first = %s\n", tmp->str);
-	// while (tmp)
-	// {
-	// 	ft_printf("[%02d]%s\n", i++, tmp->str);
-	// 	tmp = tmp->next;
-	// }
-	// ft_printf("%s", RESET);
 	shell->history = init_history(shell);
 	if (!shell->history)
 		exit_free(shell);

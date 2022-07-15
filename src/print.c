@@ -6,13 +6,13 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 15:24:33 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/14 03:26:03 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 00:51:09 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*print_symbol(t_symbol symbol)
+char	*symboltostr(t_symbol symbol)
 {
 	if (symbol == T_BIN)
 		return ("T_BIN");
@@ -51,11 +51,27 @@ void	print_list(t_shell *shell)
 		token = (t_token *)tmp->data;
 		ft_printf("%s<%s%03d%s|%s", ORANGE, RESET, token->pos, ORANGE, RESET);
 		ft_printf("%-20.20s*%s|%s", token->key, ORANGE, RESET);
-		symbol = print_symbol(token->symbol);
+		symbol = symboltostr(token->symbol);
 		ft_printf("%-11s%s> %s%d\n", symbol, ORANGE, RESET, token->index);
 		tmp = tmp->next;
 	}
 	ft_printf("%s#######################################%s\n", ORANGE, RESET);
+}
+
+void	print_all_env(t_shell *shell)
+{
+	int		i;
+	t_env	*tmp;
+
+	i = 0;
+	tmp = shell->senv;
+	ft_printf("%s################# ENV LIST #################\n", MAG);
+	while (tmp)
+	{
+		ft_printf("[%02d]%s\n", i++, tmp->str);
+		tmp = tmp->next;
+	}
+	ft_printf("%s", RESET);
 }
 
 int	print_errno(char *object, int ret)
@@ -70,9 +86,6 @@ int	print_error(t_shell *shell)
 	int	i;
 	int	j;
 
-	// ft_printf("\nIN PERROR PARSING\n");
-	// if (errno)
-	// 	print_errno(shell);
 	i = pop_index(shell->current);
 	j = -1;
 	ft_printf("%sminishell:%s ", RED, RESET);
@@ -82,7 +95,7 @@ int	print_error(t_shell *shell)
 		ft_printf("%s: is a directory\n", pop_key(shell->current));
 	else if (shell->ret == 127)
 		ft_printf("%s: command not found\n", pop_key(shell->current));
-	else
+	if (shell->ret < 6)
 	{
 		ft_printf("%s%s\n", shell->line, GREEN);
 		while (++j < i)
@@ -92,5 +105,7 @@ int	print_error(t_shell *shell)
 		}
 		ft_printf("%s^%s\n", RED, RESET);
 	}
+	if (shell->ret < 6)
+		shell->ret = 1;
 	return (shell->ret);
 }

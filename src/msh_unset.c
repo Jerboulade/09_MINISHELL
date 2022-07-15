@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 17:22:23 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/11 22:07:00 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/15 00:46:39 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,8 @@ void	remove_node(t_shell *shell, char *arg)
 		else
 		{
 			node->prev->next = node->next;
-			// ft_dprintf(shell->fd_stdout, "node = '%p'\n", node);
 			if (node->next)
 				node->next->prev = node->prev;
-			// ft_dprintf(shell->fd_stdout, "node = '%p'\n", node);
 		}
 		free(node->str);
 		free(node);
@@ -47,12 +45,12 @@ int	proceed_unsetting(t_shell *shell, char **av)
 	exit_status = 0;
 	while (av[++i])
 	{
-		// ft_dprintf(shell->fd_stdout, "arg = '%s'\n", av[i]);
 		ret = check_arg_format(av[i]);
-		// ft_dprintf(shell->fd_stdout, "arg = '%s'\n", av[i]);
 		if (ret < 2)
 		{
-			ft_dprintf(shell->fd_stdout, "minishell: unset: '%s' : not a valid indentifier\n", av[i]);
+			ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
+			ft_dprintf(STDERR_FILENO, "unset: '%s' : ", av[i]);
+			ft_dprintf(STDERR_FILENO, "not a valid indentifier\n");
 			exit_status++;
 		}
 		else
@@ -69,7 +67,8 @@ int	msh_unset(t_shell *shell, char **av)
 		return (0);
 	if (av[1][0] == '-')
 	{
-		ft_dprintf(shell->fd_stdout, "minishell: export: '%s' : not a valid option\n", av[1]);
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
+		ft_dprintf(STDERR_FILENO, "unset: '%s' : not a valid option\n", av[1]);
 		return (1);
 	}
 	if (proceed_unsetting(shell, av))

@@ -6,7 +6,7 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/07/14 18:38:49 by jcarere          ###   ########.fr        #
+#    Updated: 2022/07/15 04:28:06 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,10 +22,17 @@ HISTORYFILE = $(DATADIR)history.log
 INCL = ./includes/
 LIBDIR = ./libft/
 LIB = $(LIBDIR)libft.a
-SRC =	main.c minishell.c init.c parsing.c tokenizer.c expand.c lexer.c \
- 		token_pop.c token_utils.c history.c parsing_utils.c is_check.c print.c \
-		free.c executor.c env_utils.c msh_pwd.c msh_echo.c msh_env.c \
-		msh_export.c msh_unset.c msh_cd.c msh_exit.c
+SRC =	main.c minishell.c init.c \
+		env_update.c env_utils.c env_utils2.c \
+		parsing.c parsing_utils.c \
+		tokenizer.c token_pop.c token_utils.c \
+		expand.c expand_utils.c \
+		lexer.c lexer_path_utils.c \
+		executor.c handle_pipe.c handle_redir.c \
+		msh_cd.c msh_echo.c msh_env.c msh_exit.c msh_export.c msh_pwd.c msh_unset.c \
+ 		history.c \
+		is_check.c is_check2.c is_check3.c print.c \
+		free.c free_utils.c
 OBJ = $(addprefix $(OBJDIR), $(SRC:%.c=%.o))
 REMOVE = /bin/rm -rf
 C_CYAN = \033[1;96m

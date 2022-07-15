@@ -6,12 +6,11 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:16:28 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/09 17:26:04 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/14 23:34:51 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 char	*dup_env_varname(t_shell *shell, char *arg)
 {
