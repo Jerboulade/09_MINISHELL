@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 13:33:03 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/15 00:42:31 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/17 20:32:48 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,12 @@ void	proceed_exportation(t_shell *shell, char **av)
 		if (!ret)
 		{
 			ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
-			ft_dprintf(STDERR_FILENO, "export: too many arguments\n");
+			ft_dprintf(STDERR_FILENO, "export: invalid arguments\n");
 		}
 		else if (ret == 1)
 		{
 			name = dup_env_varname(shell, av[i]);
-			if (name)
+			if (get_env(shell, name))
 				update_value(shell, av[i], name, av);
 			else
 				create_value(shell, av[i], name, av);

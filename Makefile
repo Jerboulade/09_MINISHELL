@@ -6,7 +6,7 @@
 #    By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/02 22:28:18 by jcarere           #+#    #+#              #
-#    Updated: 2022/07/15 14:06:23 by jcarere          ###   ########.fr        #
+#    Updated: 2022/07/17 20:35:03 by jcarere          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,9 +15,10 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror #-fsanitize=address
 RLINCL = -I/usr/local/Cellar/readline/8.1.2/include
 RLLIB = -L/usr/local/Cellar/readline/8.1.2/lib -lreadline
+#RLINCL = -I/Users/jcarere/.brew/opt/readline/include
+#RLLIB = -L/Users/jcarere/.brew/opt/readline/lib -lreadline
 SRCDIR = ./src/
 OBJDIR = ./obj/
-MVOBJ =
 DATADIR = ./data/
 HISTORYFILE = $(DATADIR)history.log
 INCL = ./includes/

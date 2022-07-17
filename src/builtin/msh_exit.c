@@ -38,8 +38,8 @@ int	msh_exit(t_shell *shell, char **av)
 	else if (av[1] && !ft_strisdigit(av[1]))
 	{
 		shell->exit = 255;
-		ft_dprintf(STDERR_FILENO, "%sminishell:%s ", RED, RESET);
-		ft_dprintf(STDERR_FILENO, "exit: numeric argument required\n");
+		ft_dprintf(STDERR_FILENO, "%sminishell:%s exit: ", RED, RESET);
+		ft_dprintf(STDERR_FILENO, "%s: numeric argument required\n", av[1]);
 	}
 	else if (av[1])
 	{

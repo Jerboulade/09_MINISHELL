@@ -6,7 +6,7 @@
 /*   By: jcarere <jcarere@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 22:35:08 by jcarere           #+#    #+#             */
-/*   Updated: 2022/07/15 14:07:16 by jcarere          ###   ########.fr       */
+/*   Updated: 2022/07/17 20:35:25 by jcarere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	ret = head(env);
+	// system("leaks minishell");
 	return (ret);
 }

@@ -26,10 +26,10 @@ void	pipe_process(t_shell *shell, int fd[2], pid_t pid)
 		waitpid(pid, &shell->ret, 0);
 		if (shell->ret >= 256)
 			shell->ret /= 256;
-		if (g_sig.signal == 131)//
-			ft_printf("Quit: %d\n", g_sig.signal - 128);//
-		if (g_sig.signal)//
-			shell->ret = g_sig.signal;//
+		if (g_sig.signal == 131)
+			ft_printf("Quit: %d\n", g_sig.signal - 128);
+		if (g_sig.signal)
+			shell->ret = g_sig.signal;
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		close(fd[1]);
@@ -57,7 +57,8 @@ int	handle_pipe(t_shell *shell, t_symbol exec_type, char **tab)
 	if (exec_type == T_BIN)
 	{
 		shell->ret = open_pipe(shell);
-		(void)tab;
+		if (shell->parent == 1)
+			free(tab);
 	}
 	else if (exec_type == T_BUILTIN)
 	{
