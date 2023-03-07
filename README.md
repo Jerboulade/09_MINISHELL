@@ -5,6 +5,7 @@
 ## Description
 Recoding personal bash-like shell in C
 
+![minishell](screenshot.png)
 
 ## Run it
 
